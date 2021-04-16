@@ -34,6 +34,8 @@ const Board = () => {
   ])
 
   const [messages, setMessage] = useState([])
+  const [selectedColor, setSelectedColor] = useState('color black')
+  const colorsToChoose = ['red', 'green', 'blue', 'yellow', 'orange', 'pink', 'purple', 'gray', 'black'] 
 
   const addMessage = (message) => {
     const id = Math.floor(Math.random() * 10000) + 1
@@ -71,13 +73,17 @@ const Board = () => {
       if (!send) { return; }
       const w = canvas.width;
       const h = canvas.height;
+      if(socketRef.current.readyState != 0){
       socketRef.current.send(JSON.stringify({
         x0: x0 / w,
         y0: y0 / h,
         x1: x1 / w,
         y1: y1 / h,
         color,
-      }));
+        
+      }))
+    }
+
     };
 
     const onMouseDown = (e) => {
@@ -92,6 +98,7 @@ const Board = () => {
       e.touches[0].clientX, e.clientY || e.touches[0].clientY, current.color, true);
       current.x = e.clientX || e.touches[0].clientX;
       current.y = e.clientY || e.touches[0].clientY;
+
     };
     
     const onMouseUp = (e) => {
@@ -121,8 +128,8 @@ const Board = () => {
     canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
 
     const onResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.width = 600;
+      canvas.length = 600;
       let img = document.createElement('img');
       img.src = dataURL;
       context.drawImage(img, 0,0);
@@ -158,15 +165,13 @@ const Board = () => {
         <Header />
         <div className="inline">
           <div ref={colorsRef} className="colors">
-            <div className="color red" />
-            <div className="color green" />
-            <div className="color blue" />
-            <div className="color yellow" />
-            <div className="color orange" />
-            <div className="color pink" />
-            <div className="color purple" />
-            <div className="color gray" />
-            <div className="color black" />
+            
+              {colorsToChoose.map((color) => (
+                <div className={`color ${color}`} onClick ={() => setSelectedColor(`color ${color}`)}/>
+              ))}
+            
+            <div>Color: </div>
+            <div className={selectedColor} />
           </div>
           <div>
             <div className="inline">
@@ -176,7 +181,7 @@ const Board = () => {
               <PlayersList players={players}/>
             </div>
             <TextInput onAdd={addMessage}/>
-            <MessagesList messages={messages}/>
+            <MessagesList messages={messages} setMessage={setMessage}/>
           </div>
         </div>
       </div>
