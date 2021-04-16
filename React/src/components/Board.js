@@ -34,6 +34,8 @@ const Board = () => {
   ])
 
   const [messages, setMessage] = useState([])
+  const [selectedColor, setSelectedColor] = useState('color black')
+  const colorsToChoose = ['red', 'green', 'blue', 'yellow', 'orange', 'pink', 'purple', 'gray', 'black'] 
 
   const addMessage = (message) => {
     const id = Math.floor(Math.random() * 10000) + 1
@@ -158,15 +160,13 @@ const Board = () => {
         <Header />
         <div className="inline">
           <div ref={colorsRef} className="colors">
-            <div className="color red" />
-            <div className="color green" />
-            <div className="color blue" />
-            <div className="color yellow" />
-            <div className="color orange" />
-            <div className="color pink" />
-            <div className="color purple" />
-            <div className="color gray" />
-            <div className="color black" />
+            
+              {colorsToChoose.map((color) => (
+                <div className={`color ${color}`} onClick ={() => setSelectedColor(`color ${color}`)}/>
+              ))}
+            
+            <div>Color: </div>
+            <div className={selectedColor} />
           </div>
           <div>
             <div className="inline">
@@ -176,7 +176,7 @@ const Board = () => {
               <PlayersList players={players}/>
             </div>
             <TextInput onAdd={addMessage}/>
-            <MessagesList messages={messages}/>
+            <MessagesList messages={messages} setMessage={setMessage}/>
           </div>
         </div>
       </div>
