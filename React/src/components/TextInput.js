@@ -10,7 +10,7 @@ function TextInput({ onAdd }) {
     }
 
     return (
-        <div class="in">
+        <div className="in">
             <form onSubmit={onSubmit}>
                 <input type="text" placeholder="Wprowadź odpowiedź..." value={text} onChange={(e) => setText(e.target.value)}/>
                 <input type="submit" style={{display: "none"}}/>
