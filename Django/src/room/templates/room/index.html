@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Kalambury</title>
+  </head>
+  <body>
+    <form action="" method="post" id="gameForm">
+      {% csrf_token %} Podaj swoja nazwe <br />
+      <input id="username-input" type="text" name="username" size="50" /><br />
+      Podaj kod pokoju<br />
+      <input id="room-code-input" type="text" size="50" /><br />
+      <input id="join" type="submit" value="Dolacz" />
+    </form>
+    <script>
+      document.querySelector("#join").onclick = function (e) {
+        var roomCode = document.querySelector("#room-code-input").value;
+        document.getElementById("gameForm").action = "/room/" + roomCode + "/";
+        window.location.pathname = "/room/" + roomCode + "/";
+      };
+    </script>
+  </body>
+</html>
