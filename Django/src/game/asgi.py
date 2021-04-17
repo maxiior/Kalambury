@@ -1,5 +1,3 @@
-
-
 import os
 import room.routing
 from django.core.asgi import get_asgi_application
