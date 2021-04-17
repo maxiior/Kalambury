@@ -7,3 +7,29 @@
     border-radius: 15px;
     box-sizing: border-box;
 }
+
+.messages-list
+{
+    overflow-y: auto;
+    height: 100px;
+    background-color: #e6e6e6;
+    margin-top: 10px;
+    margin-bottom: 100px;
+    border-radius: 15px;
+    padding: 10px;
+}
+
+.messages-list::-webkit-scrollbar 
+{
+	width: 10px;
+}
+
+.messages-list::-webkit-scrollbar-track 
+{
+   background-color: #ddd;
+}
+	
+.messages-list::-webkit-scrollbar-thumb 
+{
+	background: #82b74b;
+}

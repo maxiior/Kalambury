@@ -34,7 +34,7 @@ const Board = () => {
   ])
 
   const [messages, setMessage] = useState([])
-  const [selectedColor, setSelectedColor] = useState('color black')
+  const [selectedColor, setSelectedColor] = useState('s-color black')
   const colorsToChoose = ['red', 'green', 'blue', 'yellow', 'orange', 'pink', 'purple', 'gray', 'black'] 
 
   const addMessage = (message) => {
@@ -167,10 +167,10 @@ const Board = () => {
           <div ref={colorsRef} className="colors">
             
               {colorsToChoose.map((color) => (
-                <div className={`color ${color}`} onClick ={() => setSelectedColor(`color ${color}`)}/>
+                <div className={`color ${color}`} onClick ={() => setSelectedColor(`s-color ${color}`)}/>
               ))}
             
-            <div>Color: </div>
+            <div className='selected-color'>Color</div>
             <div className={selectedColor} />
           </div>
           <div>

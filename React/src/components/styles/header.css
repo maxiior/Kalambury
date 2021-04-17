@@ -12,3 +12,16 @@
     align-items: center;
     font-size: 30px;
 }
+
+.time
+{
+    display: flex;
+    align-items: center;
+}
+
+.time-i
+{
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
