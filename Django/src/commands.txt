@@ -1,0 +1,13 @@
+Useful commands
+=============
+py manage.py makemigrations users
+py manage.py migrate
+py manage.py makemigrations --dry-run --verbosity 3 # to nie
+py manage.py runserver
+py manage.py createsuperuser
+
+# not yet
+pip install coverage
+coverage run --omit='*/venv/*' manage.py test
+coverage html
+
