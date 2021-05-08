@@ -23,12 +23,12 @@ const Board = () => {
     },
     {
       id: 3,
-      nick: 'misior',
+      nick: 'adamus',
       points: 220
     },
     {
       id: 4,
-      nick: 'tadeo',
+      nick: 'izz',
       points: 190
     },
   ])
