@@ -145,7 +145,8 @@ const Board = () => {
       drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
     }
 
-    socketRef.current = new WebSocket('ws://'+ window.location.host)
+    var ws_scheme = window.location.protocol == "https:" ? "wss://" : "ws://";
+    socketRef.current = new WebSocket(ws_scheme + window.location.host)
     socketRef.current.onopen = e => {
       console.log('open', e)
     }
