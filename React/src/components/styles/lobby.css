@@ -1,35 +1,63 @@
+.lobby {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .lobby-container {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .lobby-page {
-    background-color: white;
-    border: 1px solid rgb(192, 192, 192);
-    padding: 30px;
-    width: 300px;
-    margin-top: 20px;
-    border-radius: 15px;
-    font-size: 20px;
+  background-color: white;
+  padding: 50px;
+  width: 300px;
+  margin-top: 20px;
+  border-radius: 15px;
+  font-size: 20px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
-.lobby-page .text-field {
-    width: 100%;
-    border-radius: 5px;
-    border: 1px solid rgb(192, 192, 192);
-    margin-bottom: 10px;
-    background-color: rgb(250, 250, 250);
-    outline: none;
-    font-size: 16px;
-    
+
+.text-field {
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 15px;
+  border: 1px solid rgb(192, 192, 192);
+  margin-bottom: 10px;
+  background-color: white;
+  outline: none;
+  font-size: 16px;
+  padding: 10px 20px;
+}
+
+.text-field:focus {
+  border-color: #71d147;
+  color: #71d147;
 }
 
 .join-button {
-    border: 1px solid  rgb(192, 192, 192);
-    border-radius: 8px;
-    outline: none;
-    transition: .1s;
-    cursor: pointer;
-    padding: 10px 10px 10px 10px;
-    font-size: 16px;
-    font-weight: 500;
+  border: none;
+  background-color: #71d147;
+  color: white;
+  border-radius: 15px;
+  outline: none;
+  transition: 0.2s;
+  cursor: pointer;
+  padding: 10px 10px 10px 10px;
+  font-size: 16px;
+  font-weight: 500;
+  width: 100%;
+}
+
+.join-button:hover {
+  background-color: #90db70;
+}
+
+header {
+  font-size: 20px;
+  text-align: center;
+  color: #71d147;
+  margin-bottom: 10px;
 }
