@@ -178,12 +178,12 @@ const Board = () => {
     canvas.addEventListener("mouseup", onMouseUp, false);
     canvas.addEventListener("mouseout", onMouseUp, false);
     //canvas.addEventListener("mousemove", onMouseMove, false);
-    canvas.addEventListener("mousemove", throttle(onMouseMove, 10), false);
+    canvas.addEventListener("mousemove", throttle(onMouseMove, 20), false);
     canvas.addEventListener("touchstart", onMouseDown, false);
     canvas.addEventListener("touchend", onMouseUp, false);
     canvas.addEventListener("touchcancel", onMouseUp, false);
     //canvas.addEventListener("touchmove", onMouseMove, false);
-    canvas.addEventListener("touchmove", throttle(onMouseMove, 10), false);
+    canvas.addEventListener("touchmove", throttle(onMouseMove, 20), false);
 
     const onResize = () => {
       positionCanvas = canvas.getBoundingClientRect();
