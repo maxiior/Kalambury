@@ -11,7 +11,7 @@
     <input id="message-submit" type="button" value="Wyslij" />
     <div style="height:100px"></div>
 
-    <input class="payload-send" onclick="sendPayload(this)" type="button" value="Send random message" data-payload='{"type":"ChatMessage", "message":"test"}'/>
+    <input class="payload-send" onclick="sendPayload(this)" type="button" value="Send random message" data-payload='{"type":"ChatMessage", "Message":"test"}'/>
     <input class="payload-send" onclick="sendPayload(this)" type="button" value="Change my username" data-payload='{"type":"ChangeUsername", "new_username":"Mam nowe imie"}'/>
 
     {{ room_code|json_script:"room-code" }}

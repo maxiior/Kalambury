@@ -80,6 +80,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
 class GameStatus():
     playersIdList = []
     playersIdToUsername = {}
+    playersIdToPoints = {}
     roomId = None
     hostId = None
     currentRoomId = None
@@ -103,6 +104,8 @@ class GameEngine():
         else:
             self.game_room:GameStatus = self.game_room[0]
 
+        self.__join_player_to_existing_room()
+
 
     def handleMessage(self, message) -> Tuple[list, str]:
         websocket_responses = []
@@ -119,7 +122,7 @@ class GameEngine():
         if(message["type"] == "ChatMessage"):
             response = {
                 "type": "ChatMessage",
-                "Messsage": f"Received message from: {self.__get_human_readable_username(self.player_id)} " + message["Message"]
+                "Message": f"Received message from: {self.__get_human_readable_username(self.player_id)} " + message["Message"]
             }
             websocket_responses.append((self.game_room.playersIdList, response))
 
@@ -132,27 +135,31 @@ class GameEngine():
             }
 
 
-        #websocket_responses.append((self.game_room.playersIdList, response))
-        #websocket_responses.append((self.game_room.playersIdList, self.getGameStatusMessage()))
+        websocket_responses.append((self.game_room.playersIdList, response))
+        websocket_responses.append((self.game_room.playersIdList, self.getGameStatusMessage()))
 
 
         return websocket_responses
 
-    def getLobbyStatusMessage(self) -> dict:
-        response = {
-            "type": "LobbyStatus",
-            "round_start_time": 12,
-            "round_duration": 60,
-            "player_list": [x for x in self.game_room.playersIdToUsername.values()]
-        }
-
-        response_as_chat =  {
-            "ChatMessage": json.dumps(response)
-        }
-        return response_as_chat
+    # def getLobbyStatusMessage(self) -> dict:
+    #    response = {
+    #        "type": "LobbyStatus",
+    #        "round_start_time": 12,
+    #        "round_duration": 60,
+    #        "player_list": [x for x in self.game_room.playersIdToUsername.values()]
+    #    }
+    #
+    #    response_as_chat =  {
+    #        "ChatMessage": json.dumps(response)
+    #    }
+    #    return response_as_chat
 
 
     def getGameStatusMessage(self) -> dict:
+        players_with_points = {}
+        print(self.game_room.playersIdToPoints)
+        for player in self.game_room.playersIdList:
+            players_with_points[self.__get_human_readable_username(player)] = self.game_room.playersIdToPoints[player][0]
         response = {
             "type": "GameStatus",
             "current_round": self.game_room.currentRoundNumber[0],
@@ -160,7 +167,7 @@ class GameEngine():
             "word_placeholder": "word_place_holder",
             "round_start_time": 12,
             "round_duration": 60,
-            "player_list": [x for x in self.game_room.playersIdToUsername.values()]
+            "player_list": players_with_points
         }
 
         response_as_chat =  {
@@ -187,13 +194,17 @@ class GameEngine():
         del self.game_room.playersIdToUsername[self.player_id]
 
 
+    def __join_player_to_existing_room(self):
+        if not self.player_id in self.game_room.playersIdList:
+            self.game_room.playersIdList.append(self.player_id)
+            self.__set_player_name(f"RandomPlayerName_{uuid.uuid4()}")
+            self.game_room.playersIdToPoints.update({self.player_id: [0]})
 
     def __createNewRoom(self, roomId) -> None:
         self.game_room:GameStatus = GameStatus()
         self.game_room.isStarted = False
         self.game_room.hostId = self.player_id
-        self.game_room.playersIdList.append(self.player_id)
-        self.__set_player_name(f"RandomPlayerName_{uuid.uuid4()}")
+
         GAME_SERVERS.append(self.game_room)
 
     def __get_human_readable_username(self, player_id):
