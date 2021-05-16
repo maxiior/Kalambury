@@ -163,7 +163,7 @@ class GameEngine():
         response = {
             "type": "GameStatus",
             "current_round": self.game_room.currentRoundNumber[0],
-            "current_painter": self.__get_human_readable_username(self.player_id),
+            "current_painter": self.__get_human_readable_username(self.game_room.hostId),
             "word_placeholder": "word_place_holder",
             "round_start_time": 12,
             "round_duration": 60,
