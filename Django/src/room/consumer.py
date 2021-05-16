@@ -134,9 +134,9 @@ class GameEngine():
                 "Message": f"Extra message From server to all: Message counter: {self.game_room.messageCounter[0]}"
             }
 
-
-        websocket_responses.append((self.game_room.playersIdList, response))
-        websocket_responses.append((self.game_room.playersIdList, self.getGameStatusMessage()))
+        if(message["type"] != "CanvasUpdate"):
+            websocket_responses.append((self.game_room.playersIdList, response))
+            websocket_responses.append((self.game_room.playersIdList, self.getGameStatusMessage()))
 
 
         return websocket_responses
