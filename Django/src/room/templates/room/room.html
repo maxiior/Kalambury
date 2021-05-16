@@ -9,6 +9,10 @@
     <textarea id="log" cols="80" rows="25"></textarea><br />
     <input id="message-input" type="text" size="80" /><br />
     <input id="message-submit" type="button" value="Wyslij" />
+    <div style="height:100px"></div>
+
+    <input class="payload-send" onclick="sendPayload(this)" type="button" value="Send random message" data-payload='{"type":"ChatMessage", "message":"test"}'/>
+    <input class="payload-send" onclick="sendPayload(this)" type="button" value="Change my username" data-payload='{"type":"ChangeUsername", "new_username":"Mam nowe imie"}'/>
 
     {{ room_code|json_script:"room-code" }}
     <script>
@@ -22,7 +26,7 @@
 
       chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-        document.querySelector("#log").value += data.message + "\n";
+        document.querySelector("#log").value += data.Message + "\n";
       };
 
       document.querySelector("#message-submit").onclick = function (e) {
@@ -30,9 +34,7 @@
         var user = "{{username}}";
         const msg = user + ": " + input.value;
         chatSocket.send(
-          JSON.stringify({
-            message: msg,
-          })
+          input.value
         );
         input.value = "";
       };
@@ -40,6 +42,16 @@
       chatSocket.onclose = function (e) {
         console.error("Error. Connection closed");
       };
+
+      function sendPayload(element)
+      {
+        let payload = element.getAttribute('data-payload')
+        console.log("Send to websocket: " + payload)
+        chatSocket.send(
+          payload
+        );
+      }
+
     </script>
   </body>
 </html>

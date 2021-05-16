@@ -6,7 +6,7 @@ const MessagesList = ({messages, setMessage}) => {
         <div className='messages-list'>
             {messages.slice(0).reverse().map((m) => (
                 <div key={m.id} className="message">
-                    <div>{m.text}</div>
+                    <div>{m.Message}</div>
                 </div>
             ))}
         </div>

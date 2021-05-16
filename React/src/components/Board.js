@@ -54,8 +54,10 @@ const Board = () => {
 
   const addMessage = (message) => {
     const id = Math.floor(Math.random() * 10000) + 1;
-    const newMessage = { id, ...message };
-    setMessage([...messages, newMessage]);
+    //const newMessage = { id, ...message };
+    //setMessage([...messages, newMessage]);
+    let messageToSend = {id, type: "ChatMessage", Message: message.text}
+    socketRef.current.send(JSON.stringify(messageToSend))
   };
 
   useEffect(() => {
@@ -93,6 +95,7 @@ const Board = () => {
       if (socketRef.current.readyState != 0) {
         socketRef.current.send(
           JSON.stringify({
+            type: "CanvasUpdate",
             x0: x0 / w,
             y0: y0 / h,
             x1: x1 / w,
@@ -154,11 +157,11 @@ const Board = () => {
     canvas.addEventListener("mousedown", onMouseDown, false);
     canvas.addEventListener("mouseup", onMouseUp, false);
     canvas.addEventListener("mouseout", onMouseUp, false);
-    canvas.addEventListener("mousemove", throttle(onMouseMove, 10), false);
+    canvas.addEventListener("mousemove", onMouseMove, false);
     canvas.addEventListener("touchstart", onMouseDown, false);
     canvas.addEventListener("touchend", onMouseUp, false);
     canvas.addEventListener("touchcancel", onMouseUp, false);
-    canvas.addEventListener("touchmove", throttle(onMouseMove, 10), false);
+    canvas.addEventListener("touchmove", onMouseMove, false);
 
     const onResize = () => {
       canvas.width = 600;
@@ -175,17 +178,41 @@ const Board = () => {
     const onDrawingEvent = (data) => {
       const w = canvas.width;
       const h = canvas.height;
-      drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
+      console.log("drawing line");
+      drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color, false);
+      //drawLine(0, 0, 100, 100, data.color, false);
     };
 
     var ws_scheme = window.location.protocol == "https:" ? "wss://" : "ws://";
-    socketRef.current = new WebSocket(ws_scheme + window.location.host)
+    socketRef.current = new WebSocket(ws_scheme + window.location.hostname + ":8000/ws/room/test/")
     socketRef.current.onopen = (e) => {
       console.log('open', e);
     }
 
     socketRef.current.onmessage = (e) => {
-      onDrawingEvent(JSON.parse(e.data));
+      //onDrawingEvent(JSON.parse(e.data));
+      //console.log(e.data)
+      const id = Math.floor(Math.random() * 10000) + 1;
+      const dataParsed = JSON.parse(e.data)
+
+      if(dataParsed.type == "CanvasUpdate")
+      {
+        console.log(e.data)
+        console.log("Received CanvasUpdate")
+        onDrawingEvent(dataParsed)
+
+      }
+
+      if(dataParsed.type == "ChatMessage")
+      {
+        console.log("Received chat message")
+        console.log(dataParsed)
+        const newMessage = { id, ...dataParsed};
+        messages.push(newMessage)
+        setMessage([...messages]);
+      }
+
+
     };
 
     socketRef.current.onerror = (e) => {
