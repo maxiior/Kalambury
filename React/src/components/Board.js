@@ -62,6 +62,7 @@ const Board = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    let positionCanvas = canvas.getBoundingClientRect();
     const test = colorsRef.current;
     const context = canvas.getContext("2d");
     let dataURL = "";
@@ -92,6 +93,8 @@ const Board = () => {
       }
       const w = canvas.width;
       const h = canvas.height;
+
+      
       if (socketRef.current.readyState != 0) {
         socketRef.current.send(
           JSON.stringify({
@@ -110,34 +113,51 @@ const Board = () => {
       drawing = true;
       current.x = e.clientX || e.touches[0].clientX;
       current.y = e.clientY || e.touches[0].clientY;
+      
+      current.x = current.x - positionCanvas.left
+      current.y = current.y - positionCanvas.top
     };
 
     const onMouseMove = (e) => {
       if (!drawing) {
         return;
       }
+
+      //let positionCanvas = canvas.getBoundingClientRect();
+      let x = e.clientX || e.touches[0].clientX;
+      let y = e.clientY || e.touches[0].clientY;
+      x = x - positionCanvas.left;
+      y = y - positionCanvas.top;
+
       drawLine(
         current.x,
         current.y,
-        e.clientX || e.touches[0].clientX,
-        e.clientY || e.touches[0].clientY,
+        x,
+        y,
         current.color,
         true
       );
-      current.x = e.clientX || e.touches[0].clientX;
-      current.y = e.clientY || e.touches[0].clientY;
+      current.x = x;
+      current.y = y;
     };
 
     const onMouseUp = (e) => {
       if (!drawing) {
         return;
       }
+
+      //let positionCanvas = canvas.getBoundingClientRect();
+      let x = e.clientX || e.touches[0].clientX;
+      let y = e.clientY || e.touches[0].clientY;
+      x = x - positionCanvas.left;
+      y = y - positionCanvas.top;
+
       drawing = false;
       drawLine(
         current.x,
         current.y,
-        e.clientX || e.touches[0].clientX,
-        e.clientY || e.touches[0].clientY,
+        x,
+        y,
         current.color,
         true
       );
@@ -158,18 +178,21 @@ const Board = () => {
     canvas.addEventListener("mouseup", onMouseUp, false);
     canvas.addEventListener("mouseout", onMouseUp, false);
     canvas.addEventListener("mousemove", onMouseMove, false);
+    //canvas.addEventListener("mousemove", throttle(onMouseMove, 10), false);
     canvas.addEventListener("touchstart", onMouseDown, false);
     canvas.addEventListener("touchend", onMouseUp, false);
     canvas.addEventListener("touchcancel", onMouseUp, false);
     canvas.addEventListener("touchmove", onMouseMove, false);
+    //canvas.addEventListener("touchmove", throttle(onMouseMove, 10), false);
 
     const onResize = () => {
-      canvas.width = 600;
-      canvas.length = 600;
-      let img = document.createElement("img");
-      img.src = dataURL;
-      context.drawImage(img, 0, 0);
-      context.restore();
+      positionCanvas = canvas.getBoundingClientRect();
+      //canvas.width = 600;
+      //canvas.length = 600;
+      //let img = document.createElement("img");
+      //img.src = dataURL;
+      //context.drawImage(img, 0, 0);
+      //context.restore();
     };
 
     window.addEventListener("resize", onResize, false);
@@ -178,7 +201,6 @@ const Board = () => {
     const onDrawingEvent = (data) => {
       const w = canvas.width;
       const h = canvas.height;
-      console.log("drawing line");
       drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color, false);
       //drawLine(0, 0, 100, 100, data.color, false);
     };
@@ -238,7 +260,7 @@ const Board = () => {
           <div>
             <div className="inline">
               <div>
-                <canvas ref={canvasRef} className="whiteboard" />
+                <canvas ref={canvasRef} className="whiteboard" width="600" height="600" />
               </div>
               <PlayersList players={players} />
             </div>

@@ -132,8 +132,8 @@ class GameEngine():
             }
 
 
-        websocket_responses.append((self.game_room.playersIdList, response))
-        websocket_responses.append((self.game_room.playersIdList, self.getGameStatusMessage()))
+        #websocket_responses.append((self.game_room.playersIdList, response))
+        #websocket_responses.append((self.game_room.playersIdList, self.getGameStatusMessage()))
 
 
         return websocket_responses
