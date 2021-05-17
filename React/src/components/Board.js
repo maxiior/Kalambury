@@ -5,7 +5,7 @@ import PlayersList from "./PlayersList";
 import Header from "./Header";
 import MessagesList from "./MessagesList";
 
-const Board = () => {
+const Board = ({gameData}) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
   const socketRef = useRef();
@@ -53,16 +53,15 @@ const Board = () => {
   ];
 
   const addMessage = (message) => {
-    const id = Math.floor(Math.random() * 10000) + 1;
-    const newMessage = { id, ...message };
-    setMessage([...messages, newMessage]);
+    const id = 5;
+    let messageToSend = {id, type: "ChatMessage", Message: message.text}
+    socketRef.current.send(JSON.stringify(messageToSend))
   };
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const test = colorsRef.current;
+    let positionCanvas = canvas.getBoundingClientRect();
     const context = canvas.getContext("2d");
-    let dataURL = "";
     const colors = document.getElementsByClassName("color");
     const current = {
       color: "black",
@@ -84,15 +83,17 @@ const Board = () => {
       context.stroke();
       context.closePath();
       context.save();
-      dataURL = canvasRef.current.toDataURL("image/png");
       if (!send) {
         return;
       }
       const w = canvas.width;
       const h = canvas.height;
-      if (socketRef.current.readyState != 0) {
+
+      
+      if (socketRef.current.readyState !== 0) {
         socketRef.current.send(
           JSON.stringify({
+            type: "CanvasUpdate",
             x0: x0 / w,
             y0: y0 / h,
             x1: x1 / w,
@@ -107,34 +108,51 @@ const Board = () => {
       drawing = true;
       current.x = e.clientX || e.touches[0].clientX;
       current.y = e.clientY || e.touches[0].clientY;
+      
+      current.x = current.x - positionCanvas.left
+      current.y = current.y - positionCanvas.top
     };
 
     const onMouseMove = (e) => {
       if (!drawing) {
         return;
       }
+
+      //let positionCanvas = canvas.getBoundingClientRect();
+      let x = e.clientX || e.touches[0].clientX;
+      let y = e.clientY || e.touches[0].clientY;
+      x = x - positionCanvas.left;
+      y = y - positionCanvas.top;
+
       drawLine(
         current.x,
         current.y,
-        e.clientX || e.touches[0].clientX,
-        e.clientY || e.touches[0].clientY,
+        x,
+        y,
         current.color,
         true
       );
-      current.x = e.clientX || e.touches[0].clientX;
-      current.y = e.clientY || e.touches[0].clientY;
+      current.x = x;
+      current.y = y;
     };
 
     const onMouseUp = (e) => {
       if (!drawing) {
         return;
       }
+
+      //let positionCanvas = canvas.getBoundingClientRect();
+      let x = e.clientX || e.touches[0].clientX;
+      let y = e.clientY || e.touches[0].clientY;
+      x = x - positionCanvas.left;
+      y = y - positionCanvas.top;
+
       drawing = false;
       drawLine(
         current.x,
         current.y,
-        e.clientX || e.touches[0].clientX,
-        e.clientY || e.touches[0].clientY,
+        x,
+        y,
         current.color,
         true
       );
@@ -154,19 +172,22 @@ const Board = () => {
     canvas.addEventListener("mousedown", onMouseDown, false);
     canvas.addEventListener("mouseup", onMouseUp, false);
     canvas.addEventListener("mouseout", onMouseUp, false);
-    canvas.addEventListener("mousemove", throttle(onMouseMove, 10), false);
+    //canvas.addEventListener("mousemove", onMouseMove, false);
+    canvas.addEventListener("mousemove", throttle(onMouseMove, 20), false);
     canvas.addEventListener("touchstart", onMouseDown, false);
     canvas.addEventListener("touchend", onMouseUp, false);
     canvas.addEventListener("touchcancel", onMouseUp, false);
-    canvas.addEventListener("touchmove", throttle(onMouseMove, 10), false);
+    //canvas.addEventListener("touchmove", onMouseMove, false);
+    canvas.addEventListener("touchmove", throttle(onMouseMove, 20), false);
 
     const onResize = () => {
-      canvas.width = 600;
-      canvas.length = 600;
-      let img = document.createElement("img");
-      img.src = dataURL;
-      context.drawImage(img, 0, 0);
-      context.restore();
+      positionCanvas = canvas.getBoundingClientRect();
+      //canvas.width = 600;
+      //canvas.length = 600;
+      //let img = document.createElement("img");
+      //img.src = dataURL;
+      //context.drawImage(img, 0, 0);
+      //context.restore();
     };
 
     window.addEventListener("resize", onResize, false);
@@ -175,16 +196,41 @@ const Board = () => {
     const onDrawingEvent = (data) => {
       const w = canvas.width;
       const h = canvas.height;
-      drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
+      drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color, false);
+      //drawLine(0, 0, 100, 100, data.color, false);
     };
 
-    socketRef.current = new WebSocket("ws://" + window.location.host);
+    let ws_scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
+
+    socketRef.current = new WebSocket(`${ws_scheme}${window.location.hostname}:8000/ws/room/${gameData.room}/`);
     socketRef.current.onopen = (e) => {
-      console.log("open", e);
-    };
+      console.log('open', e);
+    }
 
     socketRef.current.onmessage = (e) => {
-      onDrawingEvent(JSON.parse(e.data));
+      //onDrawingEvent(JSON.parse(e.data));
+      //console.log(e.data)
+      const id = Math.floor(Math.random() * 10000) + 1;
+      const dataParsed = JSON.parse(e.data)
+
+      if(dataParsed.type === "CanvasUpdate")
+      {
+        console.log(e.data)
+        console.log("Received CanvasUpdate")
+        onDrawingEvent(dataParsed)
+
+      }
+
+      if(dataParsed.type === "ChatMessage")
+      {
+        console.log("Received chat message")
+        console.log(dataParsed)
+        const newMessage = { id, ...dataParsed};
+        messages.push(newMessage)
+        setMessage([...messages]);
+      }
+
+
     };
 
     socketRef.current.onerror = (e) => {
@@ -210,7 +256,7 @@ const Board = () => {
           <div>
             <div className="inline">
               <div>
-                <canvas ref={canvasRef} className="whiteboard" />
+                <canvas ref={canvasRef} className="whiteboard" width="600" height="600" />
               </div>
               <PlayersList players={players} />
             </div>

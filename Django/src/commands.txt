@@ -11,3 +11,7 @@ pip install coverage
 coverage run --omit='*/venv/*' manage.py test
 coverage html
 
+# venv 
+py -m venv env
+.\env\Scripts\activate
+pip install -r requirements.txt

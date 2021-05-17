@@ -18,6 +18,10 @@ class Player:
 class Message:
     type = None
 
+class ChangeUsername(Message):
+    type = "ChangeUsername"
+    new_username = None
+
 class ChatMessage(Message):
     type = "ChatMessage"
     sender = None
@@ -33,7 +37,7 @@ class GameStarted(Message):
 class GameStatus(Message):
     type = "GameStatus"
     current_round = None
-    current_round_painter = None
+    current_painter = None
     word_placeholder = None
     round_start_time = None
     round_duration = None
