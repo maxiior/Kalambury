@@ -187,7 +187,7 @@ class GameEngine():
         response_as_chat = {
             "Message": json.dumps(response)
         }
-        return response_as_chat
+        return response
 
     def __roundStarted(self) -> str:
         pass
