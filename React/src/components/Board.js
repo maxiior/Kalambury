@@ -4,8 +4,9 @@ import TextInput from "./TextInput";
 import PlayersList from "./PlayersList";
 import Header from "./Header";
 import MessagesList from "./MessagesList";
+import { getNumberIterator } from "./Iterator";
 
-const Board = ({gameData}) => {
+const Board = ({ gameData }) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
   const socketRef = useRef();
@@ -17,22 +18,22 @@ const Board = ({gameData}) => {
 
   const [players, setPlayer] = useState([
     {
-      id: 1,
+      id: 10,
       nick: "maxiior",
       points: 220,
     },
     {
-      id: 2,
+      id: 20,
       nick: "maki",
       points: 120,
     },
     {
-      id: 3,
+      id: 30,
       nick: "adamus",
       points: 220,
     },
     {
-      id: 4,
+      id: 40,
       nick: "izz",
       points: 190,
     },
@@ -52,12 +53,34 @@ const Board = ({gameData}) => {
     "black",
   ];
 
-  const addMessage = (message) => {
-    
-    const id = 5;
-    let messageToSend = { id, type: "ChatMessage", Message: message.text };
-    socketRef.current.send(JSON.stringify(messageToSend));
+  const sendMessage = (type, message) => {
+    waitForSocketConnection(socketRef.current, () => {
+      socketRef.current.send(
+        JSON.stringify({
+          type: type,
+          ...message
+        })
+      )
+    })
+  }
+
+  const addMessage = (message) => {  
+      sendMessage("ChatMessage", { Message: message.text });
   };
+
+  const waitForSocketConnection = (socket, callback) => {
+    setTimeout(
+          () => {
+            if (socket.readyState === 1) {
+                if (callback !== null){
+                    callback();
+                }
+            } else {
+                waitForSocketConnection(socket, callback);
+            }
+
+        }, 5);
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -73,6 +96,10 @@ const Board = ({gameData}) => {
     for (let i = 0; i < colors.length; i++) {
       colors[i].addEventListener("click", onColorUpdate, false);
     }
+
+    const startGame = () => {
+      sendMessage("PlayersIdList", {});
+    };
 
     let drawing = false;
     const drawLine = (x0, y0, x1, y1, color, send) => {
@@ -90,19 +117,16 @@ const Board = ({gameData}) => {
       const w = canvas.width;
       const h = canvas.height;
 
-      if (socketRef.current.readyState !== 0) {
-        socketRef.current.send(
-          JSON.stringify({
-            type: "CanvasUpdate",
-            x0: x0 / w,
-            y0: y0 / h,
-            x1: x1 / w,
-            y1: y1 / h,
-            color,
-          })
-        );
-      }
+      sendMessage("CanvasUpdate", 
+      {
+        x0: x0 / w,
+        y0: y0 / h,
+        x1: x1 / w,
+        y1: y1 / h,
+        color,
+      })
     };
+
 
     const onMouseDown = (e) => {
       drawing = true;
@@ -193,11 +217,13 @@ const Board = ({gameData}) => {
       //drawLine(0, 0, 100, 100, data.color, false);
     };
 
-
     let ws_scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
     socketRef.current = new WebSocket(
       `${ws_scheme}${window.location.hostname}:8000/ws/room/${gameData.room}/`
     );
+    
+    sendMessage("ChangeUsername", {"new_username": gameData.username});
+    startGame();
     socketRef.current.onopen = (e) => {
       console.log("open", e);
     };
@@ -208,25 +234,43 @@ const Board = ({gameData}) => {
       const id = Math.floor(Math.random() * 10000) + 1;
       const dataParsed = JSON.parse(e.data);
 
-      if(dataParsed.type === "CanvasUpdate")
-      {
-        console.log(e.data)
-        console.log("Received CanvasUpdate")
-        onDrawingEvent(dataParsed)
-      }
-
-      if (dataParsed.type == "CanvasUpdate") {
+      if (dataParsed.type === "CanvasUpdate") {
         console.log(e.data);
         console.log("Received CanvasUpdate");
         onDrawingEvent(dataParsed);
       }
 
-      if (dataParsed.type == "ChatMessage") {
+      if (dataParsed.type === "CanvasUpdate") {
+        console.log(e.data);
+        console.log("Received CanvasUpdate");
+        onDrawingEvent(dataParsed);
+      }
+
+      if (dataParsed.type === "ChatMessage") {
         console.log("Received chat message");
         console.log(dataParsed);
         const newMessage = { id, ...dataParsed };
         messages.push(newMessage);
         setMessage([...messages]);
+      }
+
+      if (dataParsed.type === "ChatMessage") {
+        console.log("Received chat message");
+        console.log(dataParsed);
+        const newMessage = { id, ...dataParsed };
+        messages.push(newMessage);
+        setMessage([...messages]);
+      }
+
+      if (dataParsed.type === "PlayersIdList") {
+        setPlayer([
+          ...players,
+          {
+            id: getNumberIterator().next(),
+            nick: dataParsed.Users,
+            points: 200,
+          },
+        ]);
       }
     };
 
@@ -238,7 +282,7 @@ const Board = ({gameData}) => {
   return (
     <div className="main">
       <div>
-        <Header seconds={60} word={word} />
+        <Header word={word} socketRef={socketRef} />
         <div className="inline">
           <div ref={colorsRef} className="colors">
             {colorsToChoose.map((color) => (

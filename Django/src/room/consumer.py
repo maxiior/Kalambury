@@ -128,6 +128,17 @@ class GameEngine():
             websocket_responses.append(
                 (self.game_room.playersIdList, response))
 
+        if(message["type"] == "PlayersIdList"):
+            names = []
+            for id in self.game_room.playersIdList:
+                names.append(self.__get_human_readable_username(id))
+            response = {
+                "type": "PlayersIdList",
+                "Users": names
+            }
+            websocket_responses.append(
+                (self.game_room.playersIdList, response))
+
         if(message["type"] == "CanvasUpdate"):
             websocket_responses.append((self.game_room.playersIdList, message))
 
