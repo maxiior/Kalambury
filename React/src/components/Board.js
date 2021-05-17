@@ -53,9 +53,7 @@ const Board = () => {
   ];
 
   const addMessage = (message) => {
-    const id = Math.floor(Math.random() * 10000) + 1;
-    //const newMessage = { id, ...message };
-    //setMessage([...messages, newMessage]);
+    const id = 5;
     let messageToSend = {id, type: "ChatMessage", Message: message.text}
     socketRef.current.send(JSON.stringify(messageToSend))
   };
@@ -63,9 +61,7 @@ const Board = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     let positionCanvas = canvas.getBoundingClientRect();
-    const test = colorsRef.current;
     const context = canvas.getContext("2d");
-    let dataURL = "";
     const colors = document.getElementsByClassName("color");
     const current = {
       color: "black",
@@ -87,7 +83,6 @@ const Board = () => {
       context.stroke();
       context.closePath();
       context.save();
-      dataURL = canvasRef.current.toDataURL("image/png");
       if (!send) {
         return;
       }
@@ -95,7 +90,7 @@ const Board = () => {
       const h = canvas.height;
 
       
-      if (socketRef.current.readyState != 0) {
+      if (socketRef.current.readyState !== 0) {
         socketRef.current.send(
           JSON.stringify({
             type: "CanvasUpdate",
@@ -205,7 +200,7 @@ const Board = () => {
       //drawLine(0, 0, 100, 100, data.color, false);
     };
 
-    var ws_scheme = window.location.protocol == "https:" ? "wss://" : "ws://";
+    let ws_scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
     socketRef.current = new WebSocket(ws_scheme + window.location.hostname + ":8000/ws/room/test/")
     socketRef.current.onopen = (e) => {
       console.log('open', e);
@@ -217,7 +212,7 @@ const Board = () => {
       const id = Math.floor(Math.random() * 10000) + 1;
       const dataParsed = JSON.parse(e.data)
 
-      if(dataParsed.type == "CanvasUpdate")
+      if(dataParsed.type === "CanvasUpdate")
       {
         console.log(e.data)
         console.log("Received CanvasUpdate")
@@ -225,7 +220,7 @@ const Board = () => {
 
       }
 
-      if(dataParsed.type == "ChatMessage")
+      if(dataParsed.type === "ChatMessage")
       {
         console.log("Received chat message")
         console.log(dataParsed)
