@@ -17,26 +17,11 @@ const Board = ({ gameData }) => {
   });
 
   const [players, setPlayer] = useState([
-    {
-      id: 10,
-      nick: "maxiior",
-      points: 220,
-    },
-    {
-      id: 20,
-      nick: "maki",
-      points: 120,
-    },
-    {
-      id: 30,
-      nick: "adamus",
-      points: 220,
-    },
-    {
-      id: 40,
-      nick: "izz",
-      points: 190,
-    },
+ //   {
+  //    id: 10,
+   //   nick: "maxiior",
+    //  points: 220,
+     //}
   ]);
 
   const [messages, setMessage] = useState([]);
@@ -66,6 +51,15 @@ const Board = ({ gameData }) => {
 
   const addMessage = (message) => {
     sendMessage("ChatMessage", { Message: message.text });
+  };
+
+  const startGame = () =>
+  {
+    console.log("Hello world");
+    socketRef.current.send(
+      JSON.stringify({
+        type: "StartGame"
+      }))
   };
 
   const waitForSocketConnection = (socket, callback) => {
@@ -289,7 +283,7 @@ const Board = ({ gameData }) => {
                   width="600"
                   height="600"
                 />
-                <button className="start-game">Rozpocznij grę</button>
+                <button className="start-game" onClick={startGame}>Rozpocznij grę</button>
               </div>
               <PlayersList players={players} />
             </div>
