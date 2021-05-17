@@ -1,7 +1,8 @@
 import { React, useState } from "react";
+import  { Redirect } from 'react-router-dom';
 import "./styles/lobby.css";
 
-export default function Lobby() {
+export default function Lobby({ setIsLogged, setGameData }) {
   const [userdata, setUserdata] = useState({ username: "", room: "" });
 
   const handleSubmit = (e) => {
@@ -13,20 +14,8 @@ export default function Lobby() {
     if (userdata.room.length === 0 || userdata.username.length === 0) {
       alert("Pola nazwy użytkownika i pokoju nie mogą być puste");
     } else {
-      const request = {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: userdata.username.trim(),
-          room: userdata.room.trim(),
-        }),
-      };
-      alert(JSON.stringify(request));
-      // fetch('http://localhost:8000/api/room/', request)
-      //     .then(response => {
-      //     status = response.status;
-      //     return response.json();
-      //     }).then(response => {})
+      setGameData({"username": userdata.username, "room": userdata.room});
+      setIsLogged(true);
     }
   };
 

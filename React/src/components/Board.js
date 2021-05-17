@@ -5,7 +5,7 @@ import PlayersList from "./PlayersList";
 import Header from "./Header";
 import MessagesList from "./MessagesList";
 
-const Board = () => {
+const Board = ({gameData}) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
   const socketRef = useRef();
@@ -201,7 +201,8 @@ const Board = () => {
     };
 
     let ws_scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
-    socketRef.current = new WebSocket(ws_scheme + window.location.hostname + ":8000/ws/room/test/")
+
+    socketRef.current = new WebSocket(`${ws_scheme}${window.location.hostname}:8000/ws/room/${gameData.room}/`);
     socketRef.current.onopen = (e) => {
       console.log('open', e);
     }
