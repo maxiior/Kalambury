@@ -1,0 +1,71 @@
+.info-background {
+  user-select: none;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  color: black;
+}
+
+.info-container {
+  background-color: white;
+  width: 500px;
+  height: 300px;
+  border-radius: 15px;
+}
+
+.info-header {
+  box-sizing: border-box;
+  width: 100%;
+  height: 60px;
+  text-align: center;
+  font-size: 30px;
+  padding: 10px;
+  color: black;
+  text-transform: uppercase;
+}
+
+.info-password {
+  font-size: 50px;
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  text-transform: uppercase;
+}
+
+.info-draw {
+  width: 200px;
+  border: none;
+  background-color: #c94c4c;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 15px;
+  font-size: 18px;
+  color: white;
+}
+
+.info-draw:active {
+  background-color: #d67676;
+}
+
+.info-button-space {
+  box-sizing: border-box;
+  height: 60px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-background-off {
+  display: none;
+}

@@ -128,6 +128,10 @@ body {
   background-color: #d67676;
 }
 
+.start-game-on {
+  display: none;
+}
+
 .cboard {
   display: flex;
   align-items: center;

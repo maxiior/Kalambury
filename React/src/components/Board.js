@@ -6,7 +6,7 @@ import Header from "./Header";
 import MessagesList from "./MessagesList";
 import { getNumberIterator } from "./Iterator";
 
-const Board = ({ gameData }) => {
+const Board = ({ gameData, start, setStart, drawing }) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
   const socketRef = useRef();
@@ -267,7 +267,7 @@ const Board = ({ gameData }) => {
   return (
     <div className="main">
       <div>
-        <Header word={word} socketRef={socketRef} />
+        <Header word={word} socketRef={socketRef} drawing={drawing} />
         <div className="inline">
           <div ref={colorsRef} className="colors">
             {colorsToChoose.map((color) => (
@@ -289,7 +289,12 @@ const Board = ({ gameData }) => {
                   width="600"
                   height="600"
                 />
-                <button className="start-game">Rozpocznij grę</button>
+                <button
+                  className={`start-game ${start && "start-game-on"}`}
+                  onClick={() => setStart(!start)}
+                >
+                  Rozpocznij grę
+                </button>
               </div>
               <PlayersList players={players} />
             </div>
