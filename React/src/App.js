@@ -5,7 +5,6 @@ import Board from "./components/Board";
 import Footer from "./components/Footer";
 import Lobby from "./components/Lobby";
 
-
 function App() {
   const [isLogged, setIsLogged] = useState(false);
   const [gameData, setGameData] = useState({"username": "", "room": ""});

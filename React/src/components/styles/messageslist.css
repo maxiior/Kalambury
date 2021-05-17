@@ -1,35 +1,35 @@
-.message
-{
-    width: 100%;
-    background-color: white;
-    margin-top: 4px;
-    padding: 2px 20px;
-    border-radius: 15px;
-    box-sizing: border-box;
+.message {
+  width: 100%;
+  background-color: white;
+  margin-top: 4px;
+  padding: 2px 20px;
+  border-radius: 15px;
+  box-sizing: border-box;
 }
 
-.messages-list
-{
-    overflow-y: auto;
-    height: 100px;
-    background-color: #e6e6e6;
-    margin-top: 10px;
-    margin-bottom: 100px;
-    border-radius: 15px;
-    padding: 10px;
+.messages-list {
+  overflow-y: auto;
+  height: 100px;
+  background-color: #e6e6e6;
+  margin-top: 10px;
+  margin-bottom: 100px;
+  border-radius: 15px;
+  padding: 10px;
 }
 
-.messages-list::-webkit-scrollbar 
-{
-	width: 10px;
+.messages-list::-webkit-scrollbar {
+  width: 10px;
 }
 
-.messages-list::-webkit-scrollbar-track 
-{
-   background-color: #ddd;
+.messages-list::-webkit-scrollbar-track {
+  background-color: #ddd;
 }
-	
-.messages-list::-webkit-scrollbar-thumb 
-{
-	background: #82b74b;
+
+.messages-list::-webkit-scrollbar-thumb {
+  background: #82b74b;
+}
+
+.messages-username {
+  color: #82b74b;
+  font-weight: 600;
 }

@@ -2,7 +2,9 @@ import { React, useState } from "react";
 import  { Redirect } from 'react-router-dom';
 import "./styles/lobby.css";
 
+
 export default function Lobby({ setIsLogged, setGameData }) {
+  
   const [userdata, setUserdata] = useState({ username: "", room: "" });
 
   const handleSubmit = (e) => {
