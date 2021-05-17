@@ -201,7 +201,10 @@ class GameEngine():
         return response
 
     def __get_random_word(self):
-        return "RandomWordToDraw"  # Chosen by fair dice roll
+        # Implement real external source 
+        words = ["Dom", "Zeszyt", "Banknot", "Komputer", "Ropucha", "Kasztan", "Obraz", "Szpital"]
+        random_word = words[random.randint(0, len(words) - 1)]
+        return random_word
 
     def __get_player_points(self, userId):
         return self.game_room.playersIdToPoints[userId][0]
