@@ -213,6 +213,7 @@ const Board = ({gameData}) => {
         console.log(e.data)
         console.log("Received CanvasUpdate")
         onDrawingEvent(dataParsed)
+      }
 
       if (dataParsed.type == "CanvasUpdate") {
         console.log(e.data);
