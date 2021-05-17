@@ -15,7 +15,8 @@ class RoomConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-        self.game_engine:GameEngine = GameEngine(self.room_code, self.channel_name)
+        self.game_engine: GameEngine = GameEngine(
+            self.room_code, self.channel_name)
 
         await self.accept()
 
@@ -24,13 +25,13 @@ class RoomConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
 
         # Send message to room group
-        #await self.channel_layer.group_send(
+        # await self.channel_layer.group_send(
         #    self.group_code,
         #    {
         #        'type': 'msg',
         #        'message': message + str(test)
         #    }
-        #)
+        # )
 
         engine_responses = self.game_engine.handleMessage(data)
 
@@ -45,7 +46,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
             )
 
         #test =test + 1
-        #if self.user:
+        # if self.user:
         #    await self.channel_layer.group_send(
         #        self.group_code,
         #        {
@@ -61,20 +62,18 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 event['payload']
             ))
 
-    
-        #await self.send(text_data=json.dumps({
+        # await self.send(text_data=json.dumps({
         #    'message': message,
         #    'debug': 'hello world'
-        #}))
+        # }))
 
     async def disconnect(self, close_code):
         self.game_engine.disconnect()
-        
+
         await self.channel_layer.group_discard(
             self.group_code,
             self.channel_name
         )
-
 
 
 class GameStatus():
@@ -85,13 +84,15 @@ class GameStatus():
     hostId = None
     currentRoomId = None
     currentPassword: str = None
-    currentRoundNumber:list = [0]
-    currentDrawer:str = None
-    maxRoundsNumber:list = [5]
+    currentRoundNumber: list = [0]
+    currentDrawer: str = None
+    maxRoundsNumber: list = [5]
     isStarted: bool = False
     messageCounter = [0]
 
-GAME_SERVERS:List[GameStatus] = []
+
+GAME_SERVERS: List[GameStatus] = []
+
 
 class GameEngine():
     def __init__(self, roomId, playerId) -> None:
@@ -102,15 +103,14 @@ class GameEngine():
         if not self.game_room:
             self.__createNewRoom(roomId)
         else:
-            self.game_room:GameStatus = self.game_room[0]
+            self.game_room: GameStatus = self.game_room[0]
 
         self.__join_player_to_existing_room()
-
 
     def handleMessage(self, message) -> Tuple[list, str]:
         websocket_responses = []
 
-        if(message["type"] == "ChangeUsername"):   
+        if(message["type"] == "ChangeUsername"):
             current_name = self.__get_human_readable_username(self.player_id)
             self.__set_player_name(message["new_username"])
 
@@ -122,22 +122,25 @@ class GameEngine():
         if(message["type"] == "ChatMessage"):
             response = {
                 "type": "ChatMessage",
-                "Message": f"Received message from: {self.__get_human_readable_username(self.player_id)} " + message["Message"]
+                "User": self.__get_human_readable_username(self.player_id),
+                "Message": message["Message"]
             }
-            websocket_responses.append((self.game_room.playersIdList, response))
+            websocket_responses.append(
+                (self.game_room.playersIdList, response))
 
         if(message["type"] == "CanvasUpdate"):
             websocket_responses.append((self.game_room.playersIdList, message))
-        
+
         self.game_room.messageCounter[0] = self.game_room.messageCounter[0] + 1
         response = {
-                "Message": f"Extra message From server to all: Message counter: {self.game_room.messageCounter[0]}"
-            }
+            "Message": f"Extra message From server to all: Message counter: {self.game_room.messageCounter[0]}"
+        }
 
         if(message["type"] != "CanvasUpdate"):
-            websocket_responses.append((self.game_room.playersIdList, response))
-            websocket_responses.append((self.game_room.playersIdList, self.getGameStatusMessage()))
-
+            websocket_responses.append(
+                (self.game_room.playersIdList, response))
+            websocket_responses.append(
+                (self.game_room.playersIdList, self.getGameStatusMessage()))
 
         return websocket_responses
 
@@ -154,12 +157,12 @@ class GameEngine():
     #    }
     #    return response_as_chat
 
-
     def getGameStatusMessage(self) -> dict:
         players_with_points = {}
         print(self.game_room.playersIdToPoints)
         for player in self.game_room.playersIdList:
-            players_with_points[self.__get_human_readable_username(player)] = self.game_room.playersIdToPoints[player][0]
+            players_with_points[self.__get_human_readable_username(
+                player)] = self.game_room.playersIdToPoints[player][0]
         response = {
             "type": "GameStatus",
             "current_round": self.game_room.currentRoundNumber[0],
@@ -170,7 +173,7 @@ class GameEngine():
             "player_list": players_with_points
         }
 
-        response_as_chat =  {
+        response_as_chat = {
             "Message": json.dumps(response)
         }
         return response_as_chat
@@ -185,14 +188,13 @@ class GameEngine():
         pass
 
     def __getRandomWord(self):
-        return "RandomWord" # Chosen by fair dice roll
+        return "RandomWord"  # Chosen by fair dice roll
 
     def disconnect(self):
         print("Player disconnected")
         print(type(self.game_room))
         self.game_room.playersIdList.remove(self.player_id)
         del self.game_room.playersIdToUsername[self.player_id]
-
 
     def __join_player_to_existing_room(self):
         if not self.player_id in self.game_room.playersIdList:
@@ -201,7 +203,7 @@ class GameEngine():
             self.game_room.playersIdToPoints.update({self.player_id: [0]})
 
     def __createNewRoom(self, roomId) -> None:
-        self.game_room:GameStatus = GameStatus()
+        self.game_room: GameStatus = GameStatus()
         self.game_room.isStarted = False
         self.game_room.hostId = self.player_id
 
@@ -212,6 +214,3 @@ class GameEngine():
 
     def __set_player_name(self, new_name):
         self.game_room.playersIdToUsername[self.player_id] = new_name
-
-    
-

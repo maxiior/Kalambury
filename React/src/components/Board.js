@@ -248,18 +248,19 @@ const Board = () => {
           </div>
           <div>
             <div className="inline">
-              <div>
+              <div className="cboard">
                 <canvas
                   ref={canvasRef}
                   className="whiteboard"
                   width="600"
                   height="600"
                 />
+                <button className="start-game">Rozpocznij grę</button>
               </div>
               <PlayersList players={players} />
             </div>
             <TextInput onAdd={addMessage} />
-            <MessagesList messages={messages} setMessage={setMessage} />
+            <MessagesList messages={messages} />
           </div>
         </div>
       </div>
