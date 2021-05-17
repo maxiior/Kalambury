@@ -87,8 +87,7 @@ class GameStatus():
     currentPassword: str = None
     currentRoundNumber: list = [0]
     wordToGuess = ""
-    currentDrawer: str = None
-    maxRoundsNumber: list = [5]
+    currentDrawerId: str = None
     currentStatus: str
     messageCounter = [0]
 
@@ -129,14 +128,18 @@ class GameEngine():
                 "User": self.__get_human_readable_username(self.player_id),
                 "Message": message["Message"]
             }
+
+            if self.__guess_word(message["Message"]):
+                websocket_responses.append((self.game_room.currentDrawerId, self.__get_message_with_full_word()))
             websocket_responses.append(
                 (self.game_room.playersIdList, response))
 
         if(message["type"] == "CanvasUpdate"):
             websocket_responses.append((self.game_room.playersIdList, message))
 
-        if(message["type"] == "GameStarted"):
-            pass
+        if(message["type"] == "StartGame"):
+            self.__start_game()
+            websocket_responses.append((self.game_room.currentDrawerId, self.__get_message_with_full_word()))
 
         if(message["type"] != "CanvasUpdate"):
             websocket_responses.append(
@@ -156,13 +159,13 @@ class GameEngine():
         for player in self.game_room.playersIdList:
             players_with_points[self.__get_human_readable_username(
                 player)] = self.game_room.playersIdToPoints[player][0]
+            
         response = {
             "type": "GameStatus",
             "status": self.game_room.currentStatus,
             "current_round": self.game_room.currentRoundNumber[0],
-            "current_painter": self.__get_human_readable_username(self.game_room.hostId),
+            "current_painter": self.__get_human_readable_username(self.game_room.currentDrawerId),
             "word_placeholder": self.__get_word_to_guess_placeholder(),
-            "round_start_time": 12,
             "round_duration": 60,
             "player_list": players_with_points
         }
@@ -177,19 +180,43 @@ class GameEngine():
             0, len(self.game_room.playersIdList) - 1)
         self.game_room.currentStatus = "Started"
         self.game_room.wordToGuess = self.__get_random_word()
-        self.game_room.currentDrawer = self.__get_human_readable_username(
-            self.game_room.playersIdList[random_player_index])
-        pass
+        self.game_room.currentDrawerId = self.game_room.playersIdList[random_player_index]
 
     def __guess_word(self, word) -> str:
         if word == self.game_room.wordToGuess:
-            pass
+            self.__set_player_points(self.player_id, self.__get_player_points(self.player_id) + 100)
+            self.__set_player_points(self.game_room.currentDrawerId, self.__get_player_points(self.game_room.currentDrawerId) + 50)
+            self.__new_round()
+            return True
 
-    def __game_end(self) -> str:
-        pass
+    def __new_round(self) -> str:
+        players_without_current_painter = [x for x in self.game_room.playersIdList if x != self.game_room.currentDrawerId]
+        if players_without_current_painter:
+            random_player_index = random.randint(0, len(players_without_current_painter) - 1)
+        else:
+            random_player_index = 0
+        self.game_room.wordToGuess = self.__get_random_word()
+        self.game_room.currentDrawerId = self.game_room.playersIdList[random_player_index]
+        print("New drawer:", self.__get_human_readable_username(self.game_room.currentDrawerId))
+
+    def __get_message_with_full_word(self):
+        response = {
+            "type": "WordToDraw",
+            "word": self.game_room.wordToGuess
+        }
+        return response
 
     def __get_random_word(self):
-        return "RandomWordToDraw"  # Chosen by fair dice roll
+        # Implement real external source 
+        words = ["Dom", "Zeszyt", "Banknot", "Komputer", "Ropucha", "Kasztan", "Obraz", "Szpital"]
+        random_word = words[random.randint(0, len(words) - 1)]
+        return random_word
+
+    def __get_player_points(self, userId):
+        return self.game_room.playersIdToPoints[userId][0]
+
+    def __set_player_points(self, userId, points):\
+        self.game_room.playersIdToPoints[userId][0] = points
 
     def __get_word_to_guess_placeholder(self):
         # TODO show minimum two random letters in random places
@@ -204,6 +231,7 @@ class GameEngine():
     def __create_new_room(self, roomId) -> None:
         self.game_room: GameStatus = GameStatus()
         self.game_room.hostId = self.player_id
+        self.game_room.currentDrawerId = self.player_id
         self.game_room.currentStatus = "notStarted"
         self.game_room.roomId = roomId
         self.game_room.playersIdList = []
