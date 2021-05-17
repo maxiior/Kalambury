@@ -39,6 +39,7 @@ function App() {
                 start={start}
                 setStart={setStart}
                 drawing={drawing}
+                setDrawing={setDrawing}
               />
             )}
           />
