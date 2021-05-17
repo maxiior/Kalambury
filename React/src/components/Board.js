@@ -96,7 +96,7 @@ const Board = ({ gameData }) => {
     }
 
     const getUsersList = () => {
-      sendMessage("PlayersIdList", {});
+      sendMessage("CanvasUpdate", {});
     };
 
     let drawing = false;
@@ -244,12 +244,12 @@ const Board = ({ gameData }) => {
         setMessage([...messages]);
       }
 
-      if (dataParsed.type === "PlayersIdList") {
-        dataParsed.Users.map((user) => {
+      if (dataParsed.type === "GameStatus") {
+        Object.keys(dataParsed.player_list).map((user, value) => {
           const newPlayer = {
             id: getNumberIterator().next(),
             nick: user,
-            points: 200,
+            points: dataParsed.player_list[user],
           };
           if (!players.some((player) => player.nick === user)) {
             players.push(newPlayer);

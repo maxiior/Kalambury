@@ -118,9 +118,9 @@ class GameEngine():
             current_name = self.__get_human_readable_username(self.player_id)
             self.__set_player_name(message["new_username"])
 
-            #response = {
+            # response = {
             #    "Message": f'Username: {current_name} Changes his name to: {message["new_username"]}'
-            #}
+            # }
             #websocket_responses.append((self.player_id, response))
 
         if(message["type"] == "ChatMessage"):
@@ -128,17 +128,6 @@ class GameEngine():
                 "type": "ChatMessage",
                 "User": self.__get_human_readable_username(self.player_id),
                 "Message": message["Message"]
-            }
-            websocket_responses.append(
-                (self.game_room.playersIdList, response))
-
-        if(message["type"] == "PlayersIdList"):
-            names = []
-            for id in self.game_room.playersIdList:
-                names.append(self.__get_human_readable_username(id))
-            response = {
-                "type": "PlayersIdList",
-                "Users": names
             }
             websocket_responses.append(
                 (self.game_room.playersIdList, response))
@@ -184,16 +173,17 @@ class GameEngine():
         return response
 
     def __start_game(self):
-        random_player_index = random.randint(0, len(self.game_room.playersIdList) - 1)
+        random_player_index = random.randint(
+            0, len(self.game_room.playersIdList) - 1)
         self.game_room.currentStatus = "Started"
         self.game_room.wordToGuess = self.__get_random_word()
-        self.game_room.currentDrawer = self.__get_human_readable_username(self.game_room.playersIdList[random_player_index])
+        self.game_room.currentDrawer = self.__get_human_readable_username(
+            self.game_room.playersIdList[random_player_index])
         pass
 
     def __guess_word(self, word) -> str:
         if word == self.game_room.wordToGuess:
             pass
-
 
     def __game_end(self) -> str:
         pass
@@ -202,9 +192,8 @@ class GameEngine():
         return "RandomWordToDraw"  # Chosen by fair dice roll
 
     def __get_word_to_guess_placeholder(self):
-        #TODO show minimum two random letters in random places 
+        # TODO show minimum two random letters in random places
         return "_" * len(self.game_room.wordToGuess)
-
 
     def __join_player_to_existing_room(self):
         if not self.player_id in self.game_room.playersIdList:
@@ -220,7 +209,6 @@ class GameEngine():
         self.game_room.playersIdList = []
         self.game_room.playersIdToUsername = {}
         self.game_room.playersIdToPoints = {}
-
 
         GAME_SERVERS.append(self.game_room)
 
