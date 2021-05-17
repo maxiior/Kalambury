@@ -87,7 +87,7 @@ class GameStatus():
     currentRoundNumber: list = [0]
     currentDrawer: str = None
     maxRoundsNumber: list = [5]
-    isStarted: bool = False
+    currentStatus: str
     messageCounter = [0]
 
 
@@ -99,11 +99,13 @@ class GameEngine():
         global GAME_SERVERS
         self.player_id = playerId
         self.game_room = [x for x in GAME_SERVERS if x.roomId == roomId]
+        print("Game servers counter: ", len(GAME_SERVERS))
         print("Initing room: ", roomId)
         if not self.game_room:
             self.__createNewRoom(roomId)
         else:
             self.game_room: GameStatus = self.game_room[0]
+            print("Found existing room", self.game_room.roomId)
 
         self.__join_player_to_existing_room()
 
@@ -176,6 +178,7 @@ class GameEngine():
                 player)] = self.game_room.playersIdToPoints[player][0]
         response = {
             "type": "GameStatus",
+            "status": self.game_room.currentStatus,
             "current_round": self.game_room.currentRoundNumber[0],
             "current_painter": self.__get_human_readable_username(self.game_room.hostId),
             "word_placeholder": "word_place_holder",
@@ -215,8 +218,13 @@ class GameEngine():
 
     def __createNewRoom(self, roomId) -> None:
         self.game_room: GameStatus = GameStatus()
-        self.game_room.isStarted = False
         self.game_room.hostId = self.player_id
+        self.game_room.currentStatus = "notStarted"
+        self.game_room.roomId = roomId
+        self.game_room.playersIdList = []
+        self.game_room.playersIdToUsername = {}
+        self.game_room.playersIdToPoints = {}
+
 
         GAME_SERVERS.append(self.game_room)
 
