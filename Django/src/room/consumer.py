@@ -88,7 +88,6 @@ class GameStatus():
     currentRoundNumber: list = [0]
     wordToGuess = ""
     currentDrawerId: str = None
-    maxRoundsNumber: list = [5]
     currentStatus: str
     messageCounter = [0]
 
@@ -129,7 +128,9 @@ class GameEngine():
                 "User": self.__get_human_readable_username(self.player_id),
                 "Message": message["Message"]
             }
-            self.__guess_word(message["Message"])
+
+            if self.__guess_word(message["Message"]):
+                websocket_responses.append((self.game_room.currentDrawerId, self.__get_message_with_full_word()))
             websocket_responses.append(
                 (self.game_room.playersIdList, response))
 
@@ -165,10 +166,8 @@ class GameEngine():
             "current_round": self.game_room.currentRoundNumber[0],
             "current_painter": self.__get_human_readable_username(self.game_room.currentDrawerId),
             "word_placeholder": self.__get_word_to_guess_placeholder(),
-            "round_start_time": 12,
             "round_duration": 60,
-            "player_list": players_with_points,
-            "my_id": self.player_id,    #TODO DELETE
+            "player_list": players_with_points
         }
 
         response_as_chat = {
@@ -185,13 +184,20 @@ class GameEngine():
 
     def __guess_word(self, word) -> str:
         if word == self.game_room.wordToGuess:
-            print("trafilem haslo")
             self.__set_player_points(self.player_id, self.__get_player_points(self.player_id) + 100)
             self.__set_player_points(self.game_room.currentDrawerId, self.__get_player_points(self.game_room.currentDrawerId) + 50)
-            print("Moje punkty", self.__get_player_points(self.player_id))
+            self.__new_round()
+            return True
 
-    def __game_end(self) -> str:
-        pass
+    def __new_round(self) -> str:
+        players_without_current_painter = [x for x in self.game_room.playersIdList if x != self.game_room.currentDrawerId]
+        if players_without_current_painter:
+            random_player_index = random.randint(0, len(players_without_current_painter) - 1)
+        else:
+            random_player_index = 0
+        self.game_room.wordToGuess = self.__get_random_word()
+        self.game_room.currentDrawerId = self.game_room.playersIdList[random_player_index]
+        print("New drawer:", self.__get_human_readable_username(self.game_room.currentDrawerId))
 
     def __get_message_with_full_word(self):
         response = {
