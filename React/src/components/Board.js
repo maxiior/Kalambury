@@ -58,29 +58,27 @@ const Board = ({ gameData }) => {
       socketRef.current.send(
         JSON.stringify({
           type: type,
-          ...message
+          ...message,
         })
-      )
-    })
-  }
+      );
+    });
+  };
 
-  const addMessage = (message) => {  
-      sendMessage("ChatMessage", { Message: message.text });
+  const addMessage = (message) => {
+    sendMessage("ChatMessage", { Message: message.text });
   };
 
   const waitForSocketConnection = (socket, callback) => {
-    setTimeout(
-          () => {
-            if (socket.readyState === 1) {
-                if (callback !== null){
-                    callback();
-                }
-            } else {
-                waitForSocketConnection(socket, callback);
-            }
-
-        }, 5);
-  }
+    setTimeout(() => {
+      if (socket.readyState === 1) {
+        if (callback !== null) {
+          callback();
+        }
+      } else {
+        waitForSocketConnection(socket, callback);
+      }
+    }, 5);
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -97,7 +95,7 @@ const Board = ({ gameData }) => {
       colors[i].addEventListener("click", onColorUpdate, false);
     }
 
-    const startGame = () => {
+    const getUsersList = () => {
       sendMessage("PlayersIdList", {});
     };
 
@@ -117,16 +115,14 @@ const Board = ({ gameData }) => {
       const w = canvas.width;
       const h = canvas.height;
 
-      sendMessage("CanvasUpdate", 
-      {
+      sendMessage("CanvasUpdate", {
         x0: x0 / w,
         y0: y0 / h,
         x1: x1 / w,
         y1: y1 / h,
         color,
-      })
+      });
     };
-
 
     const onMouseDown = (e) => {
       drawing = true;
@@ -221,9 +217,9 @@ const Board = ({ gameData }) => {
     socketRef.current = new WebSocket(
       `${ws_scheme}${window.location.hostname}:8000/ws/room/${gameData.room}/`
     );
-    
-    sendMessage("ChangeUsername", {"new_username": gameData.username});
-    startGame();
+
+    sendMessage("ChangeUsername", { new_username: gameData.username });
+    getUsersList();
     socketRef.current.onopen = (e) => {
       console.log("open", e);
     };
@@ -240,20 +236,6 @@ const Board = ({ gameData }) => {
         onDrawingEvent(dataParsed);
       }
 
-      if (dataParsed.type === "CanvasUpdate") {
-        console.log(e.data);
-        console.log("Received CanvasUpdate");
-        onDrawingEvent(dataParsed);
-      }
-
-      if (dataParsed.type === "ChatMessage") {
-        console.log("Received chat message");
-        console.log(dataParsed);
-        const newMessage = { id, ...dataParsed };
-        messages.push(newMessage);
-        setMessage([...messages]);
-      }
-
       if (dataParsed.type === "ChatMessage") {
         console.log("Received chat message");
         console.log(dataParsed);
@@ -263,14 +245,17 @@ const Board = ({ gameData }) => {
       }
 
       if (dataParsed.type === "PlayersIdList") {
-        setPlayer([
-          ...players,
-          {
+        dataParsed.Users.map((user) => {
+          const newPlayer = {
             id: getNumberIterator().next(),
-            nick: dataParsed.Users,
+            nick: user,
             points: 200,
-          },
-        ]);
+          };
+          if (!players.some((player) => player.nick === user)) {
+            players.push(newPlayer);
+            setPlayer([...players]);
+          }
+        });
       }
     };
 

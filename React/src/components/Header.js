@@ -15,8 +15,10 @@ const Header = ({ word, socketRef }) => {
   };
 
   useEffect(() => {
-    const timerId = setInterval(() => tick(), 1000);
-    return () => clearInterval(timerId);
+    if (sec > 0) {
+      const timerId = setInterval(() => tick(), 1000);
+      return () => clearInterval(timerId);
+    }
   });
 
   return (

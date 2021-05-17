@@ -1,21 +1,23 @@
-import './styles/playerslist.css';
+import "./styles/playerslist.css";
 
-const PlayersList = ({players}) => {
-    return (
-        <div className="main2">
-            <div className="players">Gracze:</div>
-            
-            {players.sort(({ points: current }, { points: previous }) => previous - current).map((p) => (
-                <div key={p.id} className="single">
-                    <div>{p.nick}</div>
-                    <div>{p.points} pkt.</div>
-                </div>
-            ))}
+const PlayersList = ({ players }) => {
+  console.log(players);
+  return (
+    <div className="main2">
+      <div className="players">Gracze:</div>
 
-            {players.length === 0 && <div class="empty">Brak</div>}
+      {players
+        .sort(({ points: current }, { points: previous }) => previous - current)
+        .map((p) => (
+          <div key={p.id} className="single">
+            <div>{p.nick}</div>
+            <div>{p.points} pkt.</div>
+          </div>
+        ))}
 
-        </div>
-    )
-}
+      {players.length === 0 && <div class="empty">Brak</div>}
+    </div>
+  );
+};
 
-export default PlayersList
+export default PlayersList;
