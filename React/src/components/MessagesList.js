@@ -1,4 +1,7 @@
 import "./styles/messageslist.css";
+import { getNumberIterator } from './Iterator';
+
+const messagesIterator = getNumberIterator();
 
 const MessagesList = ({ messages }) => {
   return (
@@ -6,10 +9,10 @@ const MessagesList = ({ messages }) => {
       {messages
         .slice(0)
         .reverse()
-        .map((m) => (
-          <div key={m.id} className="message">
+        .map((msg) => (
+          <div key={messagesIterator.next()} className="message">
             <div>
-              <span className="messages-username">{m.User} :</span> {m.Message}
+              <span className="messages-username">{msg.User} :</span> {msg.Message}
             </div>
           </div>
         ))}

@@ -5,7 +5,7 @@ import PlayersList from "./PlayersList";
 import Header from "./Header";
 import MessagesList from "./MessagesList";
 
-const Board = () => {
+const Board = ({gameData}) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
   const socketRef = useRef();
@@ -53,9 +53,8 @@ const Board = () => {
   ];
 
   const addMessage = (message) => {
-    const id = Math.floor(Math.random() * 10000) + 1;
-    //const newMessage = { id, ...message };
-    //setMessage([...messages, newMessage]);
+    
+    const id = 5;
     let messageToSend = { id, type: "ChatMessage", Message: message.text };
     socketRef.current.send(JSON.stringify(messageToSend));
   };
@@ -64,7 +63,6 @@ const Board = () => {
     const canvas = canvasRef.current;
     let positionCanvas = canvas.getBoundingClientRect();
     const context = canvas.getContext("2d");
-    let dataURL = "";
     const colors = document.getElementsByClassName("color");
     const current = {
       color: "black",
@@ -86,14 +84,13 @@ const Board = () => {
       context.stroke();
       context.closePath();
       context.save();
-      dataURL = canvasRef.current.toDataURL("image/png");
       if (!send) {
         return;
       }
       const w = canvas.width;
       const h = canvas.height;
 
-      if (socketRef.current.readyState != 0) {
+      if (socketRef.current.readyState !== 0) {
         socketRef.current.send(
           JSON.stringify({
             type: "CanvasUpdate",
@@ -196,9 +193,10 @@ const Board = () => {
       //drawLine(0, 0, 100, 100, data.color, false);
     };
 
-    var ws_scheme = window.location.protocol == "https:" ? "wss://" : "ws://";
+
+    let ws_scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
     socketRef.current = new WebSocket(
-      ws_scheme + window.location.hostname + ":8000/ws/room/test/"
+      `${ws_scheme}${window.location.hostname}:8000/ws/room/${gameData.room}/`
     );
     socketRef.current.onopen = (e) => {
       console.log("open", e);
@@ -209,6 +207,12 @@ const Board = () => {
       //console.log(e.data)
       const id = Math.floor(Math.random() * 10000) + 1;
       const dataParsed = JSON.parse(e.data);
+
+      if(dataParsed.type === "CanvasUpdate")
+      {
+        console.log(e.data)
+        console.log("Received CanvasUpdate")
+        onDrawingEvent(dataParsed)
 
       if (dataParsed.type == "CanvasUpdate") {
         console.log(e.data);
