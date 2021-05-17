@@ -97,11 +97,9 @@ const Board = ({ gameData }) => {
       colors[i].addEventListener("click", onColorUpdate, false);
     }
 
-    const startGame = async () => {
-      let info = { type: "PlayersIdList" };
-      await socketRef.current.send(JSON.stringify(info));
+    const startGame = () => {
+      sendMessage("PlayersIdList", {});
     };
-    startGame();
 
     let drawing = false;
     const drawLine = (x0, y0, x1, y1, color, send) => {
@@ -225,7 +223,7 @@ const Board = ({ gameData }) => {
     );
     
     sendMessage("ChangeUsername", {"new_username": gameData.username});
-
+    startGame();
     socketRef.current.onopen = (e) => {
       console.log("open", e);
     };
