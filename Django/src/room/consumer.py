@@ -1,6 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from typing import Tuple, List
+import random
 import uuid
 
 
@@ -85,6 +86,7 @@ class GameStatus():
     currentRoomId = None
     currentPassword: str = None
     currentRoundNumber: list = [0]
+    wordToGuess = ""
     currentDrawer: str = None
     maxRoundsNumber: list = [5]
     currentStatus: str
@@ -102,7 +104,7 @@ class GameEngine():
         print("Game servers counter: ", len(GAME_SERVERS))
         print("Initing room: ", roomId)
         if not self.game_room:
-            self.__createNewRoom(roomId)
+            self.__create_new_room(roomId)
         else:
             self.game_room: GameStatus = self.game_room[0]
             print("Found existing room", self.game_room.roomId)
@@ -116,10 +118,10 @@ class GameEngine():
             current_name = self.__get_human_readable_username(self.player_id)
             self.__set_player_name(message["new_username"])
 
-            response = {
-                "Message": f'Username: {current_name} Changes his name to: {message["new_username"]}'
-            }
-            websocket_responses.append((self.player_id, response))
+            #response = {
+            #    "Message": f'Username: {current_name} Changes his name to: {message["new_username"]}'
+            #}
+            #websocket_responses.append((self.player_id, response))
 
         if(message["type"] == "ChatMessage"):
             response = {
@@ -144,33 +146,22 @@ class GameEngine():
         if(message["type"] == "CanvasUpdate"):
             websocket_responses.append((self.game_room.playersIdList, message))
 
-        self.game_room.messageCounter[0] = self.game_room.messageCounter[0] + 1
-        response = {
-            "Message": f"Extra message From server to all: Message counter: {self.game_room.messageCounter[0]}"
-        }
+        if(message["type"] == "GameStarted"):
+            pass
 
         if(message["type"] != "CanvasUpdate"):
             websocket_responses.append(
-                (self.game_room.playersIdList, response))
-            websocket_responses.append(
-                (self.game_room.playersIdList, self.getGameStatusMessage()))
+                (self.game_room.playersIdList, self.__get_game_status_message()))
 
         return websocket_responses
 
-    # def getLobbyStatusMessage(self) -> dict:
-    #    response = {
-    #        "type": "LobbyStatus",
-    #        "round_start_time": 12,
-    #        "round_duration": 60,
-    #        "player_list": [x for x in self.game_room.playersIdToUsername.values()]
-    #    }
-    #
-    #    response_as_chat =  {
-    #        "ChatMessage": json.dumps(response)
-    #    }
-    #    return response_as_chat
+    def disconnect(self):
+        print("Player disconnected")
+        print(type(self.game_room))
+        self.game_room.playersIdList.remove(self.player_id)
+        del self.game_room.playersIdToUsername[self.player_id]
 
-    def getGameStatusMessage(self) -> dict:
+    def __get_game_status_message(self) -> dict:
         players_with_points = {}
         print(self.game_room.playersIdToPoints)
         for player in self.game_room.playersIdList:
@@ -181,7 +172,7 @@ class GameEngine():
             "status": self.game_room.currentStatus,
             "current_round": self.game_room.currentRoundNumber[0],
             "current_painter": self.__get_human_readable_username(self.game_room.hostId),
-            "word_placeholder": "word_place_holder",
+            "word_placeholder": self.__get_word_to_guess_placeholder(),
             "round_start_time": 12,
             "round_duration": 60,
             "player_list": players_with_points
@@ -192,23 +183,28 @@ class GameEngine():
         }
         return response
 
-    def __roundStarted(self) -> str:
+    def __start_game(self):
+        random_player_index = random.randint(0, len(self.game_room.playersIdList) - 1)
+        self.game_room.currentStatus = "Started"
+        self.game_room.wordToGuess = self.__get_random_word()
+        self.game_room.currentDrawer = self.__get_human_readable_username(self.game_room.playersIdList[random_player_index])
         pass
 
-    def __roundEnded(self) -> str:
+    def __guess_word(self, word) -> str:
+        if word == self.game_room.wordToGuess:
+            pass
+
+
+    def __game_end(self) -> str:
         pass
 
-    def __game_End(self) -> str:
-        pass
+    def __get_random_word(self):
+        return "RandomWordToDraw"  # Chosen by fair dice roll
 
-    def __getRandomWord(self):
-        return "RandomWord"  # Chosen by fair dice roll
+    def __get_word_to_guess_placeholder(self):
+        #TODO show minimum two random letters in random places 
+        return "_" * len(self.game_room.wordToGuess)
 
-    def disconnect(self):
-        print("Player disconnected")
-        print(type(self.game_room))
-        self.game_room.playersIdList.remove(self.player_id)
-        del self.game_room.playersIdToUsername[self.player_id]
 
     def __join_player_to_existing_room(self):
         if not self.player_id in self.game_room.playersIdList:
@@ -216,7 +212,7 @@ class GameEngine():
             self.__set_player_name(f"RandomPlayerName_{uuid.uuid4()}")
             self.game_room.playersIdToPoints.update({self.player_id: [0]})
 
-    def __createNewRoom(self, roomId) -> None:
+    def __create_new_room(self, roomId) -> None:
         self.game_room: GameStatus = GameStatus()
         self.game_room.hostId = self.player_id
         self.game_room.currentStatus = "notStarted"
