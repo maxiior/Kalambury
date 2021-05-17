@@ -52,12 +52,34 @@ const Board = ({gameData}) => {
     "black",
   ];
 
-  const addMessage = (message) => {
-    
-    const id = 5;
-    let messageToSend = { id, type: "ChatMessage", Message: message.text };
-    socketRef.current.send(JSON.stringify(messageToSend));
+  const sendMessage = (type, message) => {
+    waitForSocketConnection(socketRef.current, () => {
+      socketRef.current.send(
+        JSON.stringify({
+          type: type,
+          ...message
+        })
+      )
+    })
+  }
+
+  const addMessage = (message) => {  
+      sendMessage("ChatMessage", { Message: message.text });
   };
+
+  const waitForSocketConnection = (socket, callback) => {
+    setTimeout(
+          () => {
+            if (socket.readyState === 1) {
+                if (callback != null){
+                    callback();
+                }
+            } else {
+                waitForSocketConnection(socket, callback);
+            }
+
+        }, 5);
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -90,19 +112,16 @@ const Board = ({gameData}) => {
       const w = canvas.width;
       const h = canvas.height;
 
-      if (socketRef.current.readyState !== 0) {
-        socketRef.current.send(
-          JSON.stringify({
-            type: "CanvasUpdate",
-            x0: x0 / w,
-            y0: y0 / h,
-            x1: x1 / w,
-            y1: y1 / h,
-            color,
-          })
-        );
-      }
+      sendMessage("CanvasUpdate", 
+      {
+        x0: x0 / w,
+        y0: y0 / h,
+        x1: x1 / w,
+        y1: y1 / h,
+        color,
+      })
     };
+
 
     const onMouseDown = (e) => {
       drawing = true;
@@ -198,6 +217,9 @@ const Board = ({gameData}) => {
     socketRef.current = new WebSocket(
       `${ws_scheme}${window.location.hostname}:8000/ws/room/${gameData.room}/`
     );
+    
+    sendMessage("ChangeUsername", {"new_username": gameData.username});
+
     socketRef.current.onopen = (e) => {
       console.log("open", e);
     };
@@ -215,13 +237,13 @@ const Board = ({gameData}) => {
         onDrawingEvent(dataParsed)
       }
 
-      if (dataParsed.type == "CanvasUpdate") {
+      if (dataParsed.type === "CanvasUpdate") {
         console.log(e.data);
         console.log("Received CanvasUpdate");
         onDrawingEvent(dataParsed);
       }
 
-      if (dataParsed.type == "ChatMessage") {
+      if (dataParsed.type === "ChatMessage") {
         console.log("Received chat message");
         console.log(dataParsed);
         const newMessage = { id, ...dataParsed };
