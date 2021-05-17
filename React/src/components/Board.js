@@ -19,7 +19,7 @@ const Board = () => {
     {
       id: 1,
       nick: "maxiior",
-      points: 250,
+      points: 220,
     },
     {
       id: 2,
@@ -56,14 +56,13 @@ const Board = () => {
     const id = Math.floor(Math.random() * 10000) + 1;
     //const newMessage = { id, ...message };
     //setMessage([...messages, newMessage]);
-    let messageToSend = {id, type: "ChatMessage", Message: message.text}
-    socketRef.current.send(JSON.stringify(messageToSend))
+    let messageToSend = { id, type: "ChatMessage", Message: message.text };
+    socketRef.current.send(JSON.stringify(messageToSend));
   };
 
   useEffect(() => {
     const canvas = canvasRef.current;
     let positionCanvas = canvas.getBoundingClientRect();
-    const test = colorsRef.current;
     const context = canvas.getContext("2d");
     let dataURL = "";
     const colors = document.getElementsByClassName("color");
@@ -94,7 +93,6 @@ const Board = () => {
       const w = canvas.width;
       const h = canvas.height;
 
-      
       if (socketRef.current.readyState != 0) {
         socketRef.current.send(
           JSON.stringify({
@@ -113,9 +111,9 @@ const Board = () => {
       drawing = true;
       current.x = e.clientX || e.touches[0].clientX;
       current.y = e.clientY || e.touches[0].clientY;
-      
-      current.x = current.x - positionCanvas.left
-      current.y = current.y - positionCanvas.top
+
+      current.x = current.x - positionCanvas.left;
+      current.y = current.y - positionCanvas.top;
     };
 
     const onMouseMove = (e) => {
@@ -129,14 +127,7 @@ const Board = () => {
       x = x - positionCanvas.left;
       y = y - positionCanvas.top;
 
-      drawLine(
-        current.x,
-        current.y,
-        x,
-        y,
-        current.color,
-        true
-      );
+      drawLine(current.x, current.y, x, y, current.color, true);
       current.x = x;
       current.y = y;
     };
@@ -153,14 +144,7 @@ const Board = () => {
       y = y - positionCanvas.top;
 
       drawing = false;
-      drawLine(
-        current.x,
-        current.y,
-        x,
-        y,
-        current.color,
-        true
-      );
+      drawLine(current.x, current.y, x, y, current.color, true);
     };
 
     const throttle = (callback, delay) => {
@@ -201,46 +185,51 @@ const Board = () => {
     const onDrawingEvent = (data) => {
       const w = canvas.width;
       const h = canvas.height;
-      drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color, false);
+      drawLine(
+        data.x0 * w,
+        data.y0 * h,
+        data.x1 * w,
+        data.y1 * h,
+        data.color,
+        false
+      );
       //drawLine(0, 0, 100, 100, data.color, false);
     };
 
     var ws_scheme = window.location.protocol == "https:" ? "wss://" : "ws://";
-    socketRef.current = new WebSocket(ws_scheme + window.location.hostname + ":8000/ws/room/test/")
+    socketRef.current = new WebSocket(
+      ws_scheme + window.location.hostname + ":8000/ws/room/test/"
+    );
     socketRef.current.onopen = (e) => {
-      console.log('open', e);
-    }
+      console.log("open", e);
+    };
 
     socketRef.current.onmessage = (e) => {
       //onDrawingEvent(JSON.parse(e.data));
       //console.log(e.data)
       const id = Math.floor(Math.random() * 10000) + 1;
-      const dataParsed = JSON.parse(e.data)
+      const dataParsed = JSON.parse(e.data);
 
-      if(dataParsed.type == "CanvasUpdate")
-      {
-        console.log(e.data)
-        console.log("Received CanvasUpdate")
-        onDrawingEvent(dataParsed)
-
+      if (dataParsed.type == "CanvasUpdate") {
+        console.log(e.data);
+        console.log("Received CanvasUpdate");
+        onDrawingEvent(dataParsed);
       }
 
-      if(dataParsed.type == "ChatMessage")
-      {
-        console.log("Received chat message")
-        console.log(dataParsed)
-        const newMessage = { id, ...dataParsed};
-        messages.push(newMessage)
+      if (dataParsed.type == "ChatMessage") {
+        console.log("Received chat message");
+        console.log(dataParsed);
+        const newMessage = { id, ...dataParsed };
+        messages.push(newMessage);
         setMessage([...messages]);
       }
-
-
     };
 
     socketRef.current.onerror = (e) => {
       console.log("error", e);
     };
   }, []);
+
   return (
     <div className="main">
       <div>
@@ -260,7 +249,12 @@ const Board = () => {
           <div>
             <div className="inline">
               <div>
-                <canvas ref={canvasRef} className="whiteboard" width="600" height="600" />
+                <canvas
+                  ref={canvasRef}
+                  className="whiteboard"
+                  width="600"
+                  height="600"
+                />
               </div>
               <PlayersList players={players} />
             </div>

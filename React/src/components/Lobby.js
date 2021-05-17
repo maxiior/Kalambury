@@ -1,7 +1,7 @@
 import { React, useState } from "react";
 import "./styles/lobby.css";
 
-export default function Lobby() {
+export default function Lobby({ onLogin }) {
   const [userdata, setUserdata] = useState({ username: "", room: "" });
 
   const handleSubmit = (e) => {
@@ -27,6 +27,7 @@ export default function Lobby() {
       //     status = response.status;
       //     return response.json();
       //     }).then(response => {})
+      onLogin(true);
     }
   };
 
