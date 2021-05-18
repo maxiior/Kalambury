@@ -227,38 +227,45 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
       const id = Math.floor(Math.random() * 10000) + 1;
       const dataParsed = JSON.parse(event.data);
 
-      if (dataParsed.type === "CanvasUpdate") {
-        onDrawingEvent(dataParsed);
-      }
-
-      if (dataParsed.type === "ChatMessage") {
-        const newMessage = { id, ...dataParsed };
-        messages.push(newMessage);
-        setMessage([...messages]);
-      }
-
-      if (dataParsed.type === "GameStatus") {
-        Object.keys(dataParsed.player_list).map((user, value) => {
-          const newPlayer = {
-            id: getNumberIterator().next(),
-            nick: user,
-            points: dataParsed.player_list[user],
-          };
-          if (!players.some((player) => player.nick === user)) {
-            players.push(newPlayer);
-            setPlayer([...players]);
+      switch(true){
+        case dataParsed.type === "CanvasUpdate": {
+          onDrawingEvent(dataParsed);
+          break;
+        }
+  
+        case dataParsed.type === "ChatMessage": {
+          const newMessage = { id, ...dataParsed };
+          messages.push(newMessage);
+          setMessage([...messages]);
+          break;
+        }
+  
+        case dataParsed.type === "GameStatus": {
+          if(dataParsed.player_list !== undefined)
+          {
+            Object.keys(dataParsed.player_list).map((user, value) => {
+              const newPlayer = {
+                id: getNumberIterator().next(),
+                nick: user,
+                points: dataParsed.player_list[user],
+              };
+              if (!players.some((player) => player.nick === user)) {
+                players.push(newPlayer);
+                setPlayer([...players]);
+              }
+            });
           }
-        });
-      }
-
-      if (dataParsed.type === "GameStatus") {
-        if (dataParsed.current_painter === gameData.username){
-          setIsDrawer(true);
+          if (dataParsed.current_painter === gameData.username){
+            setIsDrawer(true);
+          }
+          else {
+            setIsDrawer(false);
+          }
+          console.log(isDrawer);
+          break;
         }
-        else {
-          setIsDrawer(false);
-        }
       }
+      
     };
 
     socketRef.current.onerror = (e) => {

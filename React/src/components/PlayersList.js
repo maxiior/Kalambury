@@ -1,7 +1,6 @@
 import "./styles/playerslist.css";
 
 const PlayersList = ({ players }) => {
-  console.log(players);
   return (
     <div className="main2">
       <div className="players">Gracze:</div>
