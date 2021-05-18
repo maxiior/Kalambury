@@ -54,7 +54,6 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
   };
 
   const startGame = () => {
-    console.log("Hello world");
     socketRef.current.send(
       JSON.stringify({
         type: "StartGame",
@@ -311,6 +310,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
                   onClick={() => {
                     setStart(!start);
                     setDrawing(!drawing);
+                    startGame();
                   }}
                 >
                   Rozpocznij grę
