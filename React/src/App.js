@@ -11,7 +11,7 @@ function App() {
   const [gameData, setGameData] = useState({ username: "", room: "" });
   const [start, setStart] = useState(false);
   const [drawing, setDrawing] = useState(false);
-  const [catchword, setCatchword] = useState('limonka');
+  const [catchword, setCatchword] = useState("");
 
   return (
     <BrowserRouter>
@@ -42,6 +42,8 @@ function App() {
                 setStart={setStart}
                 drawing={drawing}
                 setDrawing={setDrawing}
+                catchword={catchword}
+                setCatchword={setCatchword}
               />
             )}
           />

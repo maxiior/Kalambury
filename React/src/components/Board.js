@@ -6,15 +6,10 @@ import Header from "./Header";
 import MessagesList from "./MessagesList";
 import { getNumberIterator } from "./Iterator";
 
-const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
+const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setCatchword }) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
   const socketRef = useRef();
-
-  const [word, setWord] = useState({
-    letters: ["s", "t", "r", "a", "ż", "a", "k"],
-    show: [0, 0, 0, 0, 1, 0, 1],
-  });
 
   const [players, setPlayer] = useState([
     //   {
@@ -264,6 +259,15 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
           else {
             isDrawer = false;
           }
+          if (dataParsed.word_placeholder !== undefined && !isDrawer){
+            setCatchword(dataParsed.word_placeholder);
+            console.log(catchword);
+          }
+          break;
+        }
+
+        case dataParsed.type === "WordToDraw": {
+          setCatchword(dataParsed.word);
           break;
         }
       }
@@ -279,7 +283,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
     <div className="main">
       <div>
         <Header
-          word={word}
+          word={catchword}
           socketRef={socketRef}
           drawing={drawing}
           start={start}
