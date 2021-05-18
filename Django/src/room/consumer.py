@@ -167,7 +167,8 @@ class GameEngine():
             "current_painter": self.__get_human_readable_username(self.game_room.currentDrawerId),
             "word_placeholder": self.__get_word_to_guess_placeholder(),
             "round_duration": 60,
-            "player_list": players_with_points
+            "host": self.__get_human_readable_username(self.game_room.hostId),
+            "player_list": players_with_points,
         }
 
         response_as_chat = {
