@@ -17,13 +17,6 @@ function App() {
   return (
     <BrowserRouter>
       <div className="App">
-        <InfoPanel
-          start={start}
-          setDrawing={setDrawing}
-          drawing={drawing}
-          setStart={setStart}
-          catchword={catchword}
-        />
         <Switch>
           <Route
             exact

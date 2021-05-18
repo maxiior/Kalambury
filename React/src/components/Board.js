@@ -5,10 +5,8 @@ import PlayersList from "./PlayersList";
 import Header from "./Header";
 import MessagesList from "./MessagesList";
 import { getNumberIterator } from "./Iterator";
+import InfoPanel from "./InfoPanel";
 
-<<<<<<< Updated upstream
-const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setCatchword }) => {
-=======
 const Board = ({
   gameData,
   start,
@@ -20,7 +18,6 @@ const Board = ({
   clock,
   setClock,
 }) => {
->>>>>>> Stashed changes
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
   const socketRef = useRef();
@@ -103,8 +100,8 @@ const Board = ({
     };
 
     let drawing = false;
-    const drawLine = (x0, y0, x1, y1, color, isReceived=false) => {
-      if(!isReceived){
+    const drawLine = (x0, y0, x1, y1, color, isReceived = false) => {
+      if (!isReceived) {
         if (!isDrawer) {
           return;
         }
@@ -121,7 +118,7 @@ const Board = ({
       const w = canvas.width;
       const h = canvas.height;
 
-      if(!isReceived){
+      if (!isReceived) {
         sendMessage("CanvasUpdate", {
           x0: x0 / w,
           y0: y0 / h,
@@ -130,7 +127,6 @@ const Board = ({
           color,
         });
       }
-      
     };
 
     const onMouseDown = (e) => {
@@ -143,7 +139,7 @@ const Board = ({
     };
 
     const onMouseMove = (e) => {
-      if (!drawing  || !isDrawer) {
+      if (!drawing || !isDrawer) {
         return;
       }
 
@@ -239,22 +235,21 @@ const Board = ({
       const id = Math.floor(Math.random() * 10000) + 1;
       const dataParsed = JSON.parse(event.data);
 
-      switch(true){
+      switch (true) {
         case dataParsed.type === "CanvasUpdate": {
           onDrawingEvent(dataParsed, true);
           break;
         }
-  
+
         case dataParsed.type === "ChatMessage": {
           const newMessage = { id, ...dataParsed };
           messages.push(newMessage);
           setMessage([...messages]);
           break;
         }
-  
+
         case dataParsed.type === "GameStatus": {
-          if(dataParsed.player_list !== undefined)
-          {
+          if (dataParsed.player_list !== undefined) {
             Object.keys(dataParsed.player_list).map((user, value) => {
               const newPlayer = {
                 id: getNumberIterator().next(),
@@ -267,13 +262,12 @@ const Board = ({
               }
             });
           }
-          if (dataParsed.current_painter === gameData.username){
+          if (dataParsed.current_painter === gameData.username) {
             isDrawer = true;
-          }
-          else {
+          } else {
             isDrawer = false;
           }
-          if (dataParsed.word_placeholder !== undefined && !isDrawer){
+          if (dataParsed.word_placeholder !== undefined && !isDrawer) {
             setCatchword(dataParsed.word_placeholder);
             console.log(catchword);
           }
@@ -284,17 +278,13 @@ const Board = ({
           setCatchword(dataParsed.word);
           break;
         }
-<<<<<<< Updated upstream
-=======
 
         case dataParsed.type === "ClockInfo":
           {
             setClock(true);
           }
           break;
->>>>>>> Stashed changes
       }
-      
     };
 
     socketRef.current.onerror = (e) => {
@@ -305,12 +295,13 @@ const Board = ({
   return (
     <div className="main">
       <div>
-        <Header
-          word={catchword}
-          socketRef={socketRef}
+        <InfoPanel
+          setDrawing={setDrawing}
           drawing={drawing}
-          start={start}
+          catchword={catchword}
+          socketRef={socketRef}
         />
+        <Header word={catchword} socketRef={socketRef} clock={clock} />
         <div className="inline">
           <div ref={colorsRef} className="colors">
             {colorsToChoose.map((color) => (
