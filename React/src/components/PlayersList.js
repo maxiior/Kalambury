@@ -15,7 +15,7 @@ const PlayersList = ({ players }) => {
           </div>
         ))}
 
-      {players.length === 0 && <div class="empty">Brak</div>}
+      {players.length === 0 && <div className="empty">Brak</div>}
     </div>
   );
 };
