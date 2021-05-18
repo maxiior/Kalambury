@@ -3,7 +3,7 @@ import "./styles/infopanel.css";
 
 const InfoPanel = ({ start, setDrawing, drawing, setStart }) => {
   return (
-    <div className={`info-background ${!start && "info-background-off"}`}>
+    <div className={`info-background ${!drawing && "info-background-off"}`}>
       <div className="info-container">
         <div className="info-header">TWOJE HASŁO:</div>
         <div className="info-password">Limonka</div>
@@ -12,7 +12,6 @@ const InfoPanel = ({ start, setDrawing, drawing, setStart }) => {
             className="info-draw"
             onClick={() => {
               setDrawing(!drawing);
-              setStart(!start);
             }}
           >
             Rysuj
