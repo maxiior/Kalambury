@@ -17,6 +17,9 @@ const Board = ({
   setCatchword,
   clock,
   setClock,
+  setGameData,
+  setHost,
+  host,
 }) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
@@ -228,6 +231,7 @@ const Board = ({
     socketRef.current.onopen = (event) => {
       console.log("open", event);
     };
+    sendMessage("GetInfo", {});
 
     socketRef.current.onmessage = (event) => {
       //onDrawingEvent(JSON.parse(e.data));
@@ -269,7 +273,9 @@ const Board = ({
           }
           if (dataParsed.word_placeholder !== undefined && !isDrawer) {
             setCatchword(dataParsed.word_placeholder);
-            console.log(catchword);
+          }
+          if (host === "" && dataParsed.host !== undefined) {
+            setHost(dataParsed.host);
           }
           break;
         }
@@ -323,16 +329,18 @@ const Board = ({
                   width="600"
                   height="600"
                 />
-                <button
-                  className={`start-game ${start && "start-game-on"}`}
-                  onClick={() => {
-                    setStart(!start);
-                    setDrawing(!drawing);
-                    startGame();
-                  }}
-                >
-                  Rozpocznij grę
-                </button>
+                {gameData.username === host && (
+                  <button
+                    className={`start-game ${start && "start-game-on"}`}
+                    onClick={() => {
+                      setStart(!start);
+                      setDrawing(!drawing);
+                      startGame();
+                    }}
+                  >
+                    Rozpocznij grę
+                  </button>
+                )}
               </div>
               <PlayersList players={players} />
             </div>

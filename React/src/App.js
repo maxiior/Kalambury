@@ -4,11 +4,14 @@ import { useState } from "react";
 import Board from "./components/Board";
 import Footer from "./components/Footer";
 import Lobby from "./components/Lobby";
-import InfoPanel from "./components/InfoPanel";
 
 function App() {
   const [isLogged, setIsLogged] = useState(false);
-  const [gameData, setGameData] = useState({ username: "", room: "" });
+  const [gameData, setGameData] = useState({
+    username: "",
+    room: "",
+  });
+  const [host, setHost] = useState("");
   const [start, setStart] = useState(false);
   const [drawing, setDrawing] = useState(false);
   const [catchword, setCatchword] = useState("");
@@ -40,6 +43,9 @@ function App() {
                 setCatchword={setCatchword}
                 clock={clock}
                 setClock={setClock}
+                setGameData={setGameData}
+                setHost={setHost}
+                host={host}
               />
             )}
           />
