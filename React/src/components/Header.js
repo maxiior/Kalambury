@@ -30,7 +30,7 @@ const Header = ({ word, socketRef, drawing, start }) => {
         <div>{sec} sekund</div>
       </div>
       <div>
-        {word.letters.map((l, i) => (word.show[i] === 0 ? "_ " : l + " "))}
+        {word.includes('_') ? "_ ".repeat(word.length) : word}
       </div>
     </div>
   );
