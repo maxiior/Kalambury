@@ -24,7 +24,6 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
     //}
   ]);
 
-  const [isDrawer, setIsDrawer] = useState(true);
   const [messages, setMessage] = useState([]);
   const [selectedColor, setSelectedColor] = useState("s-color black");
   const colorsToChoose = [
@@ -96,9 +95,11 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
     };
 
     let drawing = false;
-    const drawLine = (x0, y0, x1, y1, color, send) => {
-      if (!send || !isDrawer) {
-        return;
+    const drawLine = (x0, y0, x1, y1, color, isReceived=false) => {
+      if(!isReceived){
+        if (!isDrawer) {
+          return;
+        }
       }
       context.beginPath();
       context.moveTo(x0, y0);
@@ -112,13 +113,16 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
       const w = canvas.width;
       const h = canvas.height;
 
-      sendMessage("CanvasUpdate", {
-        x0: x0 / w,
-        y0: y0 / h,
-        x1: x1 / w,
-        y1: y1 / h,
-        color,
-      });
+      if(!isReceived){
+        sendMessage("CanvasUpdate", {
+          x0: x0 / w,
+          y0: y0 / h,
+          x1: x1 / w,
+          y1: y1 / h,
+          color,
+        });
+      }
+      
     };
 
     const onMouseDown = (e) => {
@@ -141,7 +145,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
       x = x - positionCanvas.left;
       y = y - positionCanvas.top;
 
-      drawLine(current.x, current.y, x, y, current.color, true);
+      drawLine(current.x, current.y, x, y, current.color, false);
       current.x = x;
       current.y = y;
     };
@@ -158,7 +162,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
       y = y - positionCanvas.top;
 
       drawing = false;
-      drawLine(current.x, current.y, x, y, current.color, true);
+      drawLine(current.x, current.y, x, y, current.color, false);
     };
 
     const throttle = (callback, delay) => {
@@ -196,7 +200,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
     window.addEventListener("resize", onResize, false);
     onResize();
 
-    const onDrawingEvent = (data) => {
+    const onDrawingEvent = (data, isReceived) => {
       const w = canvas.width;
       const h = canvas.height;
       drawLine(
@@ -205,7 +209,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
         data.x1 * w,
         data.y1 * h,
         data.color,
-        false
+        isReceived
       );
       //drawLine(0, 0, 100, 100, data.color, false);
     };
@@ -229,7 +233,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
 
       switch(true){
         case dataParsed.type === "CanvasUpdate": {
-          onDrawingEvent(dataParsed);
+          onDrawingEvent(dataParsed, true);
           break;
         }
   
@@ -256,12 +260,11 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
             });
           }
           if (dataParsed.current_painter === gameData.username){
-            setIsDrawer(true);
+            isDrawer = true;
           }
           else {
-            setIsDrawer(false);
+            isDrawer = false;
           }
-          console.log(isDrawer);
           break;
         }
       }
