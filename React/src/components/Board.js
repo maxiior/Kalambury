@@ -76,6 +76,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    let isDrawer = false;
     let positionCanvas = canvas.getBoundingClientRect();
     const context = canvas.getContext("2d");
     const colors = document.getElementsByClassName("color");
@@ -94,7 +95,12 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
     };
 
     let drawing = false;
-    const drawLine = (x0, y0, x1, y1, color, send) => {
+    const drawLine = (x0, y0, x1, y1, color, isReceived=false) => {
+      if(!isReceived){
+        if (!isDrawer) {
+          return;
+        }
+      }
       context.beginPath();
       context.moveTo(x0, y0);
       context.lineTo(x1, y1);
@@ -103,19 +109,20 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
       context.stroke();
       context.closePath();
       context.save();
-      if (!send) {
-        return;
-      }
+
       const w = canvas.width;
       const h = canvas.height;
 
-      sendMessage("CanvasUpdate", {
-        x0: x0 / w,
-        y0: y0 / h,
-        x1: x1 / w,
-        y1: y1 / h,
-        color,
-      });
+      if(!isReceived){
+        sendMessage("CanvasUpdate", {
+          x0: x0 / w,
+          y0: y0 / h,
+          x1: x1 / w,
+          y1: y1 / h,
+          color,
+        });
+      }
+      
     };
 
     const onMouseDown = (e) => {
@@ -128,7 +135,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
     };
 
     const onMouseMove = (e) => {
-      if (!drawing) {
+      if (!drawing  || !isDrawer) {
         return;
       }
 
@@ -138,7 +145,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
       x = x - positionCanvas.left;
       y = y - positionCanvas.top;
 
-      drawLine(current.x, current.y, x, y, current.color, true);
+      drawLine(current.x, current.y, x, y, current.color, false);
       current.x = x;
       current.y = y;
     };
@@ -155,7 +162,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
       y = y - positionCanvas.top;
 
       drawing = false;
-      drawLine(current.x, current.y, x, y, current.color, true);
+      drawLine(current.x, current.y, x, y, current.color, false);
     };
 
     const throttle = (callback, delay) => {
@@ -193,7 +200,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
     window.addEventListener("resize", onResize, false);
     onResize();
 
-    const onDrawingEvent = (data) => {
+    const onDrawingEvent = (data, isReceived) => {
       const w = canvas.width;
       const h = canvas.height;
       drawLine(
@@ -202,7 +209,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
         data.x1 * w,
         data.y1 * h,
         data.color,
-        false
+        isReceived
       );
       //drawLine(0, 0, 100, 100, data.color, false);
     };
@@ -214,43 +221,54 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing }) => {
 
     sendMessage("ChangeUsername", { new_username: gameData.username });
     getUsersList();
-    socketRef.current.onopen = (e) => {
-      console.log("open", e);
+    socketRef.current.onopen = (event) => {
+      console.log("open", event);
     };
 
-    socketRef.current.onmessage = (e) => {
+    socketRef.current.onmessage = (event) => {
       //onDrawingEvent(JSON.parse(e.data));
       //console.log(e.data)
       const id = Math.floor(Math.random() * 10000) + 1;
-      const dataParsed = JSON.parse(e.data);
+      const dataParsed = JSON.parse(event.data);
 
-      if (dataParsed.type === "CanvasUpdate") {
-        console.log(e.data);
-        console.log("Received CanvasUpdate");
-        onDrawingEvent(dataParsed);
-      }
-
-      if (dataParsed.type === "ChatMessage") {
-        console.log("Received chat message");
-        console.log(dataParsed);
-        const newMessage = { id, ...dataParsed };
-        messages.push(newMessage);
-        setMessage([...messages]);
-      }
-
-      if (dataParsed.type === "GameStatus") {
-        Object.keys(dataParsed.player_list).map((user, value) => {
-          const newPlayer = {
-            id: getNumberIterator().next(),
-            nick: user,
-            points: dataParsed.player_list[user],
-          };
-          if (!players.some((player) => player.nick === user)) {
-            players.push(newPlayer);
-            setPlayer([...players]);
+      switch(true){
+        case dataParsed.type === "CanvasUpdate": {
+          onDrawingEvent(dataParsed, true);
+          break;
+        }
+  
+        case dataParsed.type === "ChatMessage": {
+          const newMessage = { id, ...dataParsed };
+          messages.push(newMessage);
+          setMessage([...messages]);
+          break;
+        }
+  
+        case dataParsed.type === "GameStatus": {
+          if(dataParsed.player_list !== undefined)
+          {
+            Object.keys(dataParsed.player_list).map((user, value) => {
+              const newPlayer = {
+                id: getNumberIterator().next(),
+                nick: user,
+                points: dataParsed.player_list[user],
+              };
+              if (!players.some((player) => player.nick === user)) {
+                players.push(newPlayer);
+                setPlayer([...players]);
+              }
+            });
           }
-        });
+          if (dataParsed.current_painter === gameData.username){
+            isDrawer = true;
+          }
+          else {
+            isDrawer = false;
+          }
+          break;
+        }
       }
+      
     };
 
     socketRef.current.onerror = (e) => {

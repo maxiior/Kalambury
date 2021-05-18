@@ -1,7 +1,6 @@
 import "./styles/playerslist.css";
 
 const PlayersList = ({ players }) => {
-  console.log(players);
   return (
     <div className="main2">
       <div className="players">Gracze:</div>
@@ -15,7 +14,7 @@ const PlayersList = ({ players }) => {
           </div>
         ))}
 
-      {players.length === 0 && <div class="empty">Brak</div>}
+      {players.length === 0 && <div className="empty">Brak</div>}
     </div>
   );
 };
