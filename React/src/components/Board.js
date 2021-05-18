@@ -6,7 +6,15 @@ import Header from "./Header";
 import MessagesList from "./MessagesList";
 import { getNumberIterator } from "./Iterator";
 
-const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setCatchword }) => {
+const Board = ({
+  gameData,
+  start,
+  setStart,
+  drawing,
+  setDrawing,
+  catchword,
+  setCatchword,
+}) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
   const socketRef = useRef();
@@ -54,6 +62,14 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setC
         type: "StartGame",
       })
     );
+    startClock();
+  };
+  const startClock = () => {
+    socketRef.current.send(
+      JSON.stringify({
+        type: "ClockStart",
+      })
+    );
   };
 
   const waitForSocketConnection = (socket, callback) => {
@@ -67,6 +83,8 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setC
       }
     }, 5);
   };
+
+  const [clock, setClock] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -89,8 +107,8 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setC
     };
 
     let drawing = false;
-    const drawLine = (x0, y0, x1, y1, color, isReceived=false) => {
-      if(!isReceived){
+    const drawLine = (x0, y0, x1, y1, color, isReceived = false) => {
+      if (!isReceived) {
         if (!isDrawer) {
           return;
         }
@@ -107,7 +125,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setC
       const w = canvas.width;
       const h = canvas.height;
 
-      if(!isReceived){
+      if (!isReceived) {
         sendMessage("CanvasUpdate", {
           x0: x0 / w,
           y0: y0 / h,
@@ -116,7 +134,6 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setC
           color,
         });
       }
-      
     };
 
     const onMouseDown = (e) => {
@@ -129,7 +146,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setC
     };
 
     const onMouseMove = (e) => {
-      if (!drawing  || !isDrawer) {
+      if (!drawing || !isDrawer) {
         return;
       }
 
@@ -225,22 +242,21 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setC
       const id = Math.floor(Math.random() * 10000) + 1;
       const dataParsed = JSON.parse(event.data);
 
-      switch(true){
+      switch (true) {
         case dataParsed.type === "CanvasUpdate": {
           onDrawingEvent(dataParsed, true);
           break;
         }
-  
+
         case dataParsed.type === "ChatMessage": {
           const newMessage = { id, ...dataParsed };
           messages.push(newMessage);
           setMessage([...messages]);
           break;
         }
-  
+
         case dataParsed.type === "GameStatus": {
-          if(dataParsed.player_list !== undefined)
-          {
+          if (dataParsed.player_list !== undefined) {
             Object.keys(dataParsed.player_list).map((user, value) => {
               const newPlayer = {
                 id: getNumberIterator().next(),
@@ -253,15 +269,13 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setC
               }
             });
           }
-          if (dataParsed.current_painter === gameData.username){
+          if (dataParsed.current_painter === gameData.username) {
             isDrawer = true;
-          }
-          else {
+          } else {
             isDrawer = false;
           }
-          if (dataParsed.word_placeholder !== undefined && !isDrawer){
+          if (dataParsed.word_placeholder !== undefined && !isDrawer) {
             setCatchword(dataParsed.word_placeholder);
-            console.log(catchword);
           }
           break;
         }
@@ -270,8 +284,14 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setC
           setCatchword(dataParsed.word);
           break;
         }
+
+        case dataParsed.type === "ClockInfo":
+          {
+            console.log("TUTAJ");
+            setClock(true);
+          }
+          break;
       }
-      
     };
 
     socketRef.current.onerror = (e) => {
@@ -282,12 +302,7 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setC
   return (
     <div className="main">
       <div>
-        <Header
-          word={catchword}
-          socketRef={socketRef}
-          drawing={drawing}
-          start={start}
-        />
+        <Header word={catchword} socketRef={socketRef} clock={clock} />
         <div className="inline">
           <div ref={colorsRef} className="colors">
             {colorsToChoose.map((color) => (

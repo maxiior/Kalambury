@@ -2,7 +2,7 @@ import "./styles/header.css";
 import { BiTimeFive } from "react-icons/bi";
 import { useEffect, useState } from "react";
 
-const Header = ({ word, socketRef, drawing, start }) => {
+const Header = ({ word, socketRef, clock }) => {
   const [sec, setSec] = useState(60);
 
   const tick = () => {
@@ -15,10 +15,11 @@ const Header = ({ word, socketRef, drawing, start }) => {
   };
 
   useEffect(() => {
-    if (sec > 0 && drawing === false && start === true) {
+    if (sec > 0 && clock === true) {
       const timerId = setInterval(() => tick(), 1000);
       return () => clearInterval(timerId);
     }
+    console.log(clock);
   });
 
   return (
@@ -29,9 +30,7 @@ const Header = ({ word, socketRef, drawing, start }) => {
         </div>
         <div>{sec} sekund</div>
       </div>
-      <div>
-        {word.includes('_') ? "_ ".repeat(word.length) : word}
-      </div>
+      <div>{word.includes("_") ? "_ ".repeat(word.length) : word}</div>
     </div>
   );
 };
