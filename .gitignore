@@ -23,4 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 node_modules/
-Django/src/game/__pycache__/
+Django/src/**/__pycache__/
+Django/.idea
