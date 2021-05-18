@@ -6,7 +6,21 @@ import Header from "./Header";
 import MessagesList from "./MessagesList";
 import { getNumberIterator } from "./Iterator";
 
+<<<<<<< Updated upstream
 const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setCatchword }) => {
+=======
+const Board = ({
+  gameData,
+  start,
+  setStart,
+  drawing,
+  setDrawing,
+  catchword,
+  setCatchword,
+  clock,
+  setClock,
+}) => {
+>>>>>>> Stashed changes
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
   const socketRef = useRef();
@@ -270,6 +284,15 @@ const Board = ({ gameData, start, setStart, drawing, setDrawing, catchword, setC
           setCatchword(dataParsed.word);
           break;
         }
+<<<<<<< Updated upstream
+=======
+
+        case dataParsed.type === "ClockInfo":
+          {
+            setClock(true);
+          }
+          break;
+>>>>>>> Stashed changes
       }
       
     };

@@ -12,6 +12,7 @@ function App() {
   const [start, setStart] = useState(false);
   const [drawing, setDrawing] = useState(false);
   const [catchword, setCatchword] = useState("");
+  const [clock, setClock] = useState(false);
 
   return (
     <BrowserRouter>
@@ -44,6 +45,8 @@ function App() {
                 setDrawing={setDrawing}
                 catchword={catchword}
                 setCatchword={setCatchword}
+                clock={clock}
+                setClock={setClock}
               />
             )}
           />
