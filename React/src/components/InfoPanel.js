@@ -1,7 +1,7 @@
 import React from "react";
 import "./styles/infopanel.css";
 
-const InfoPanel = ({ setDrawing, drawing, catchword, socketRef }) => {
+const InfoPanel = ({ catchword, socketRef, setInfopanel }) => {
   const startClock = () => {
     socketRef.current.send(
       JSON.stringify({
@@ -10,7 +10,7 @@ const InfoPanel = ({ setDrawing, drawing, catchword, socketRef }) => {
     );
   };
   return (
-    <div className={`info-background ${!drawing && "info-background-off"}`}>
+    <div className="info-background">
       <div className="info-container">
         <div className="info-header">TWOJE HASŁO:</div>
         <div className="info-password">{catchword}</div>
@@ -18,8 +18,8 @@ const InfoPanel = ({ setDrawing, drawing, catchword, socketRef }) => {
           <button
             className="info-draw"
             onClick={() => {
-              setDrawing(!drawing);
               startClock();
+              setInfopanel(false);
             }}
           >
             Rysuj

@@ -11,30 +11,27 @@ const Board = ({
   gameData,
   start,
   setStart,
-  drawing,
-  setDrawing,
   catchword,
   setCatchword,
   clock,
   setClock,
-  setGameData,
   setHost,
   host,
+  isDrawer,
+  setIsDrawer,
+  placeholder,
+  setPlaceholder,
+  infopanel,
+  setInfopanel,
 }) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
   const socketRef = useRef();
 
-  const [players, setPlayer] = useState([
-    //   {
-    //    id: 10,
-    //   nick: "maxiior",
-    //  points: 220,
-    //}
-  ]);
-
+  const [players, setPlayer] = useState([]);
   const [messages, setMessage] = useState([]);
   const [selectedColor, setSelectedColor] = useState("s-color black");
+
   const colorsToChoose = [
     "red",
     "green",
@@ -84,13 +81,13 @@ const Board = ({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    let isDrawer = false;
     let positionCanvas = canvas.getBoundingClientRect();
     const context = canvas.getContext("2d");
     const colors = document.getElementsByClassName("color");
     const current = {
       color: "black",
     };
+
     const onColorUpdate = (e) => {
       current.color = e.target.className.split(" ")[1];
     };
@@ -146,7 +143,6 @@ const Board = ({
         return;
       }
 
-      //let positionCanvas = canvas.getBoundingClientRect();
       let x = e.clientX || e.touches[0].clientX;
       let y = e.clientY || e.touches[0].clientY;
       x = x - positionCanvas.left;
@@ -162,7 +158,6 @@ const Board = ({
         return;
       }
 
-      //let positionCanvas = canvas.getBoundingClientRect();
       let x = e.clientX || e.touches[0].clientX;
       let y = e.clientY || e.touches[0].clientY;
       x = x - positionCanvas.left;
@@ -186,22 +181,14 @@ const Board = ({
     canvas.addEventListener("mousedown", onMouseDown, false);
     canvas.addEventListener("mouseup", onMouseUp, false);
     canvas.addEventListener("mouseout", onMouseUp, false);
-    //canvas.addEventListener("mousemove", onMouseMove, false);
     canvas.addEventListener("mousemove", throttle(onMouseMove, 20), false);
     canvas.addEventListener("touchstart", onMouseDown, false);
     canvas.addEventListener("touchend", onMouseUp, false);
     canvas.addEventListener("touchcancel", onMouseUp, false);
-    //canvas.addEventListener("touchmove", onMouseMove, false);
     canvas.addEventListener("touchmove", throttle(onMouseMove, 20), false);
 
     const onResize = () => {
       positionCanvas = canvas.getBoundingClientRect();
-      //canvas.width = 600;
-      //canvas.length = 600;
-      //let img = document.createElement("img");
-      //img.src = dataURL;
-      //context.drawImage(img, 0, 0);
-      //context.restore();
     };
 
     window.addEventListener("resize", onResize, false);
@@ -218,7 +205,6 @@ const Board = ({
         data.color,
         isReceived
       );
-      //drawLine(0, 0, 100, 100, data.color, false);
     };
 
     let ws_scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
@@ -231,11 +217,8 @@ const Board = ({
     socketRef.current.onopen = (event) => {
       console.log("open", event);
     };
-    sendMessage("GetInfo", {});
 
     socketRef.current.onmessage = (event) => {
-      //onDrawingEvent(JSON.parse(e.data));
-      //console.log(e.data)
       const id = Math.floor(Math.random() * 10000) + 1;
       const dataParsed = JSON.parse(event.data);
 
@@ -267,12 +250,12 @@ const Board = ({
             });
           }
           if (dataParsed.current_painter === gameData.username) {
-            isDrawer = true;
+            setIsDrawer(true);
           } else {
-            isDrawer = false;
+            setIsDrawer(false);
           }
           if (dataParsed.word_placeholder !== undefined && !isDrawer) {
-            setCatchword(dataParsed.word_placeholder);
+            setPlaceholder(dataParsed.word_placeholder);
           }
           if (host === "" && dataParsed.host !== undefined) {
             setHost(dataParsed.host);
@@ -285,10 +268,12 @@ const Board = ({
           break;
         }
 
-        case dataParsed.type === "ClockInfo":
-          {
-            setClock(true);
-          }
+        case dataParsed.type === "ClockInfo": {
+          setClock(true);
+          break;
+        }
+
+        default:
           break;
       }
     };
@@ -301,13 +286,18 @@ const Board = ({
   return (
     <div className="main">
       <div>
-        <InfoPanel
-          setDrawing={setDrawing}
-          drawing={drawing}
-          catchword={catchword}
+        {isDrawer && catchword !== "" && infopanel === true && (
+          <InfoPanel
+            catchword={catchword}
+            socketRef={socketRef}
+            setInfopanel={setInfopanel}
+          />
+        )}
+        <Header
+          word={catchword !== "" ? catchword : placeholder}
           socketRef={socketRef}
+          clock={clock}
         />
-        <Header word={catchword} socketRef={socketRef} clock={clock} />
         <div className="inline">
           <div ref={colorsRef} className="colors">
             {colorsToChoose.map((color) => (
@@ -329,13 +319,13 @@ const Board = ({
                   width="600"
                   height="600"
                 />
-                {gameData.username === host && (
+                {gameData.username === host && !start && (
                   <button
-                    className={`start-game ${start && "start-game-on"}`}
+                    className="start-game"
                     onClick={() => {
                       setStart(!start);
-                      setDrawing(!drawing);
                       startGame();
+                      //sendMessage("GetInfo", {});
                     }}
                   >
                     Rozpocznij grę

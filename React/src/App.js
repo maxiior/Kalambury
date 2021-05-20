@@ -13,9 +13,11 @@ function App() {
   });
   const [host, setHost] = useState("");
   const [start, setStart] = useState(false);
-  const [drawing, setDrawing] = useState(false);
   const [catchword, setCatchword] = useState("");
+  const [placeholder, setPlaceholder] = useState("");
   const [clock, setClock] = useState(false);
+  const [isDrawer, setIsDrawer] = useState(false);
+  const [infopanel, setInfopanel] = useState(true);
 
   return (
     <BrowserRouter>
@@ -37,8 +39,6 @@ function App() {
                 gameData={gameData}
                 start={start}
                 setStart={setStart}
-                drawing={drawing}
-                setDrawing={setDrawing}
                 catchword={catchword}
                 setCatchword={setCatchword}
                 clock={clock}
@@ -46,6 +46,12 @@ function App() {
                 setGameData={setGameData}
                 setHost={setHost}
                 host={host}
+                isDrawer={isDrawer}
+                setIsDrawer={setIsDrawer}
+                placeholder={placeholder}
+                setPlaceholder={setPlaceholder}
+                infopanel={infopanel}
+                setInfopanel={setInfopanel}
               />
             )}
           />
