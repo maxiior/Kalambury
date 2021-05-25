@@ -45,7 +45,7 @@ class Game:
             self.status = GameStatus.started
             
         players_without_drawer = [x for x in self.player_list if x.name != self.player.name]
-        if len(players_without_drawer) == 1:
+        if len(players_without_drawer) == 0:
             self.drawer = self.player
         else:
             self.drawer = players_without_drawer[random.randint(0, len(players_without_drawer) - 1)]
