@@ -25,6 +25,7 @@ class Game:
 
     def create_new_game(self):
         self.drawer = self.player
+        self.status = GameStatus.started
         self.host = self.player
         self.word_to_guess = self.__get_random_word()
         return self
@@ -42,7 +43,9 @@ class Game:
     def new_round(self):
         if self.status == GameStatus.not_started:
             self.status = GameStatus.started
-
+            
+        players_without_drawer = [x for x in self.player_list if x.name != self.player.name]
+        self.drawer = players_without_drawer[random.randint(0, len(players_without_drawer) - 1)]
         self.word_to_guess = self.__get_random_word()
 
         self.round_number = self.round_number + 1
