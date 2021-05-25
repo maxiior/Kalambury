@@ -3,6 +3,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from typing import Tuple, List
 import random
 import uuid
+from GameEngine.WebSocketsAdapter import WebSocketsAdapter
+from GameEngine.Game import Game
 
 
 class RoomConsumer(AsyncWebsocketConsumer):
@@ -16,8 +18,10 @@ class RoomConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-        self.game_engine: GameEngine = GameEngine(
-            self.room_code, self.channel_name)
+        #self.game_engine: GameEngine = GameEngine(
+        #    self.room_code, self.channel_name)
+
+        self.game_engine_v2: WebSocketsAdapter = WebSocketsAdapter(self.room_code, self.channel_name)
 
         await self.accept()
 
@@ -25,16 +29,7 @@ class RoomConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
 
-        # Send message to room group
-        # await self.channel_layer.group_send(
-        #    self.group_code,
-        #    {
-        #        'type': 'msg',
-        #        'message': message + str(test)
-        #    }
-        # )
-
-        engine_responses = self.game_engine.handleMessage(data)
+        engine_responses = self.game_engine_v2.handle_message(data)
 
         for receivers_list, response in engine_responses:
             await self.channel_layer.group_send(
@@ -46,16 +41,6 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-        #test =test + 1
-        # if self.user:
-        #    await self.channel_layer.group_send(
-        #        self.group_code,
-        #        {
-        #            'type': 'msg',
-        #            'message': f"{message}. its me: {self.user}"
-        #        }
-        #    )
-
     # Receive message from room group
     async def msg(self, event):
         if self.channel_name in event['receivers']:
@@ -63,19 +48,17 @@ class RoomConsumer(AsyncWebsocketConsumer):
                 event['payload']
             ))
 
-        # await self.send(text_data=json.dumps({
-        #    'message': message,
-        #    'debug': 'hello world'
-        # }))
-
     async def disconnect(self, close_code):
-        self.game_engine.disconnect()
+        self.game_engine_v2.disconnect()
 
         await self.channel_layer.group_discard(
             self.group_code,
             self.channel_name
         )
 
+
+
+## BELOW CODE IS DEPRECATED
 
 class GameStatus():
     playersIdList = []
