@@ -5,7 +5,7 @@ from .Player import Player
 from typing import List, Tuple
 
 GAMES_DB: Game = []
-#PLAYERS_DB:Player = []
+# PLAYERS_DB:Player = []
 
 
 class WebSocketsAdapter:
@@ -83,9 +83,15 @@ class WebSocketsAdapter:
             "Message": message["Message"]
         }
         is_guessed = self.game.guess_the_word(message["Message"])
-        if is_guessed:
-            self.__new_round()
         self.__send_to_all(response)
+        if is_guessed:
+            who_guessed = {
+                "type": "ChatMessage",
+                "User": "2daef51c-be1b-11eb-8529-0242ac130003",
+                "Message": self.player.name + " zgadł hasło (" + message["Message"] + ")"
+            }
+            self.__send_to_all(who_guessed)
+            self.__new_round()
 
     def __handle_start_game(self, message):
         self.__new_round()

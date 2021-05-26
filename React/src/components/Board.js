@@ -26,12 +26,13 @@ const Board = ({
   infopanel,
   setInfopanel,
   socket,
+  messages,
+  setMessage,
 }) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
 
   const [players, setPlayer] = useState([]);
-  const [messages, setMessage] = useState([]);
   const [selectedColor, setSelectedColor] = useState("s-color black");
 
   const colorsToChoose = [

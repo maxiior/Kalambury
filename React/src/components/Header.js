@@ -3,7 +3,7 @@ import { BiTimeFive } from "react-icons/bi";
 import { useEffect, useState } from "react";
 
 const Header = ({ word, socket, clock, host, user }) => {
-  const [sec, setSec] = useState(10);
+  const [sec, setSec] = useState(60);
 
   const tick = () => {
     if (sec > 0) setSec(sec - 1);

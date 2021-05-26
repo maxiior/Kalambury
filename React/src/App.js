@@ -19,15 +19,19 @@ function App() {
   const [isDrawer, setIsDrawer] = useState(false);
   const [infopanel, setInfopanel] = useState(true);
   const [socket, setSocket] = useState();
+  const [messages, setMessage] = useState([]);
 
   useEffect(() => {
-    if (gameData.room !== ""){
-      let ws_scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
-      setSocket(new WebSocket(
-        `${ws_scheme}${window.location.hostname}:8000/ws/room/${gameData.room}/`
-      ));
+    if (gameData.room !== "") {
+      let ws_scheme =
+        window.location.protocol === "https:" ? "wss://" : "ws://";
+      setSocket(
+        new WebSocket(
+          `${ws_scheme}${window.location.hostname}:8000/ws/room/${gameData.room}/`
+        )
+      );
     }
-  }, [gameData.room])
+  }, [gameData.room]);
 
   return (
     <BrowserRouter>
@@ -63,6 +67,8 @@ function App() {
                 infopanel={infopanel}
                 setInfopanel={setInfopanel}
                 socket={socket}
+                messages={messages}
+                setMessage={setMessage}
               />
             )}
           />
