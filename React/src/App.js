@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Board from "./components/Board";
 import Footer from "./components/Footer";
@@ -13,9 +13,25 @@ function App() {
   });
   const [host, setHost] = useState("");
   const [start, setStart] = useState(false);
-  const [drawing, setDrawing] = useState(false);
   const [catchword, setCatchword] = useState("");
+  const [placeholder, setPlaceholder] = useState("");
   const [clock, setClock] = useState(false);
+  const [isDrawer, setIsDrawer] = useState(false);
+  const [infopanel, setInfopanel] = useState(true);
+  
+
+  let ws_scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
+  const [socket, setSocket] = useState();
+
+  useEffect(() => {
+    if (gameData.room !== ""){
+      setSocket(new WebSocket(
+        `${ws_scheme}${window.location.hostname}:8000/ws/room/${gameData.room}/`
+      ));
+    }
+
+    
+  }, [isLogged])
 
   return (
     <BrowserRouter>
@@ -37,8 +53,6 @@ function App() {
                 gameData={gameData}
                 start={start}
                 setStart={setStart}
-                drawing={drawing}
-                setDrawing={setDrawing}
                 catchword={catchword}
                 setCatchword={setCatchword}
                 clock={clock}
@@ -46,6 +60,13 @@ function App() {
                 setGameData={setGameData}
                 setHost={setHost}
                 host={host}
+                isDrawer={isDrawer}
+                setIsDrawer={setIsDrawer}
+                placeholder={placeholder}
+                setPlaceholder={setPlaceholder}
+                infopanel={infopanel}
+                setInfopanel={setInfopanel}
+                socket={socket}
               />
             )}
           />

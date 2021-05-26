@@ -2,7 +2,7 @@ import "./styles/header.css";
 import { BiTimeFive } from "react-icons/bi";
 import { useEffect, useState } from "react";
 
-const Header = ({ word, socketRef, clock }) => {
+const Header = ({ word, socket, clock }) => {
   const [sec, setSec] = useState(60);
 
   const tick = () => {
@@ -10,7 +10,7 @@ const Header = ({ word, socketRef, clock }) => {
     else {
       //wysyłamy info do serwera, że koniec czasu
       let info = {};
-      socketRef.current.send(JSON.stringify(info));
+      socket.send(JSON.stringify(info));
     }
   };
 
