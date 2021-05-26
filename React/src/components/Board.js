@@ -25,7 +25,7 @@ const Board = ({
   setPlaceholder,
   infopanel,
   setInfopanel,
-  socket
+  socket,
 }) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
@@ -89,6 +89,8 @@ const Board = ({
     const current = {
       color: "black",
     };
+
+    console.log(host);
 
     const onColorUpdate = (e) => {
       current.color = e.target.className.split(" ")[1];
@@ -261,12 +263,17 @@ const Board = ({
         }
 
         case dataParsed.type === "WordToDraw": {
+          setInfopanel(true);
           setCatchword(dataParsed.word);
           break;
         }
 
         case dataParsed.type === "ClockInfo": {
-          setClock(true);
+          if (dataParsed.status === "start") {
+            setClock(true);
+          } else {
+            setClock(false);
+          }
           break;
         }
 

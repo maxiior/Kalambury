@@ -4,15 +4,15 @@ from .Game import Game
 from .Player import Player
 from typing import List, Tuple
 
-GAMES_DB:Game = []
+GAMES_DB: Game = []
 #PLAYERS_DB:Player = []
 
 
-class WebSocketsAdapter: 
+class WebSocketsAdapter:
     def __init__(self, game_id, player_id) -> None:
 
-        self.game:Game = None
-        self.player:Player = None
+        self.game: Game = None
+        self.player: Player = None
 
         found_game = [x for x in GAMES_DB if x.identifier == game_id]
         if found_game:
@@ -27,7 +27,7 @@ class WebSocketsAdapter:
             self.player = self.game.create_player_with_given_id(player_id)
 
         self.game.create_new_game()
-        self.responses:list = []
+        self.responses: list = []
 
     def handle_message(self, message_as_dict):
         messages_type_handler = {
@@ -58,7 +58,7 @@ class WebSocketsAdapter:
     def disconnect(self):
         self.game.disconnect()
 
-    def __handle_game_status(self, message = None):
+    def __handle_game_status(self, message=None):
         response = {
             "type": "GameStatus",
             "status": self.game.status,
@@ -77,10 +77,10 @@ class WebSocketsAdapter:
 
     def __handle_chat_message(self, message):
         response = {
-                "type": "ChatMessage",
-                "User": self.player.name,
-                "Message": message["Message"]
-            }
+            "type": "ChatMessage",
+            "User": self.player.name,
+            "Message": message["Message"]
+        }
         is_guessed = self.game.guess_the_word(message["Message"])
         if is_guessed:
             self.__new_round()
@@ -109,24 +109,29 @@ class WebSocketsAdapter:
         }
         self.__send_to_drawer(response_with_word_to_draw)
 
+        response = {
+            "type": "ClockInfo",
+            "status": "reset"
+        }
+        self.__send_to_all(response)
 
-    def __prepare_response(self, response:dict, receivers:List[Player]):
+    def __prepare_response(self, response: dict, receivers: List[Player]):
         receivers_ids = [x.identifier for x in receivers]
         self.responses.append(([x.identifier for x in receivers], response))
 
-    def __send_to_all_except(self, response:dict, player:Player) -> List[Player]:
+    def __send_to_all_except(self, response: dict, player: Player) -> List[Player]:
         receivers = [x for x in self.game.player_list if x.name != player.name]
         self.__prepare_response(response, receivers)
 
-    def __send_to_host(self, response:dict) -> List[Player]:
+    def __send_to_host(self, response: dict) -> List[Player]:
         receivers = [self.game.host]
         self.__prepare_response(response, receivers)
 
-    def __send_to_drawer(self, response:dict) -> List[Player]:
+    def __send_to_drawer(self, response: dict) -> List[Player]:
         receivers = [self.game.drawer]
         self.__prepare_response(response, receivers)
 
-    def __send_to_all(self, response:dict) -> List[Player]:
+    def __send_to_all(self, response: dict) -> List[Player]:
         receivers = self.game.player_list
         self.__prepare_response(response, receivers)
 
