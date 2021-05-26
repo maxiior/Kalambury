@@ -1,4 +1,7 @@
 import "./styles/playerslist.css";
+import { getNumberIterator } from "./Iterator";
+
+const playerIterator = getNumberIterator()
 
 const PlayersList = ({ players }) => {
   return (
@@ -8,7 +11,7 @@ const PlayersList = ({ players }) => {
       {players
         .sort(({ points: current }, { points: previous }) => previous - current)
         .map((p) => (
-          <div key={p.id} className="single">
+          <div key={playerIterator.next()} className="single">
             <div>{p.nick}</div>
             <div>{p.points} pkt.</div>
           </div>

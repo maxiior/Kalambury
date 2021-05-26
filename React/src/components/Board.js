@@ -7,6 +7,8 @@ import MessagesList from "./MessagesList";
 import { getNumberIterator } from "./Iterator";
 import InfoPanel from "./InfoPanel";
 
+const colorIterator = getNumberIterator();
+
 const Board = ({
   gameData,
   start,
@@ -297,6 +299,7 @@ const Board = ({
           <div ref={colorsRef} className="colors">
             {colorsToChoose.map((color) => (
               <div
+                key={colorIterator.next()}
                 className={`color ${color}`}
                 onClick={() => setSelectedColor(`s-color ${color}`)}
               />
