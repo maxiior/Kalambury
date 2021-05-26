@@ -18,20 +18,16 @@ function App() {
   const [clock, setClock] = useState(false);
   const [isDrawer, setIsDrawer] = useState(false);
   const [infopanel, setInfopanel] = useState(true);
-  
-
-  let ws_scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
   const [socket, setSocket] = useState();
 
   useEffect(() => {
     if (gameData.room !== ""){
+      let ws_scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
       setSocket(new WebSocket(
         `${ws_scheme}${window.location.hostname}:8000/ws/room/${gameData.room}/`
       ));
     }
-
-    
-  }, [isLogged])
+  }, [gameData.room])
 
   return (
     <BrowserRouter>
