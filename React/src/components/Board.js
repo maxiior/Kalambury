@@ -23,10 +23,10 @@ const Board = ({
   setPlaceholder,
   infopanel,
   setInfopanel,
+  socket
 }) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
-  const socketRef = useRef();
 
   const [players, setPlayer] = useState([]);
   const [messages, setMessage] = useState([]);
@@ -45,8 +45,8 @@ const Board = ({
   ];
 
   const sendMessage = (type, message) => {
-    waitForSocketConnection(socketRef.current, () => {
-      socketRef.current.send(
+    waitForSocketConnection(socket, () => {
+      socket.send(
         JSON.stringify({
           type: type,
           ...message,
@@ -60,7 +60,7 @@ const Board = ({
   };
 
   const startGame = () => {
-    socketRef.current.send(
+    socket.send(
       JSON.stringify({
         type: "StartGame",
       })
@@ -207,18 +207,13 @@ const Board = ({
       );
     };
 
-    let ws_scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
-    socketRef.current = new WebSocket(
-      `${ws_scheme}${window.location.hostname}:8000/ws/room/${gameData.room}/`
-    );
-
     sendMessage("ChangeUsername", { new_username: gameData.username });
     getUsersList();
-    socketRef.current.onopen = (event) => {
+    socket.onopen = (event) => {
       console.log("open", event);
     };
 
-    socketRef.current.onmessage = (event) => {
+    socket.onmessage = (event) => {
       const id = Math.floor(Math.random() * 10000) + 1;
       const dataParsed = JSON.parse(event.data);
 
@@ -278,7 +273,7 @@ const Board = ({
       }
     };
 
-    socketRef.current.onerror = (e) => {
+    socket.onerror = (e) => {
       console.log("error", e);
     };
   }, []);
@@ -289,13 +284,13 @@ const Board = ({
         {isDrawer && catchword !== "" && infopanel === true && (
           <InfoPanel
             catchword={catchword}
-            socketRef={socketRef}
+            socket={socket}
             setInfopanel={setInfopanel}
           />
         )}
         <Header
           word={catchword !== "" ? catchword : placeholder}
-          socketRef={socketRef}
+          socket={socket}
           clock={clock}
         />
         <div className="inline">

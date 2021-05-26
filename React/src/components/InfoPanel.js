@@ -1,9 +1,9 @@
 import React from "react";
 import "./styles/infopanel.css";
 
-const InfoPanel = ({ catchword, socketRef, setInfopanel }) => {
+const InfoPanel = ({ catchword, socket, setInfopanel }) => {
   const startClock = () => {
-    socketRef.current.send(
+    socket.send(
       JSON.stringify({
         type: "ClockStart",
       })

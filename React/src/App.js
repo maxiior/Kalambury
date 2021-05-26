@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Board from "./components/Board";
 import Footer from "./components/Footer";
@@ -18,6 +18,20 @@ function App() {
   const [clock, setClock] = useState(false);
   const [isDrawer, setIsDrawer] = useState(false);
   const [infopanel, setInfopanel] = useState(true);
+  
+
+  let ws_scheme = window.location.protocol === "https:" ? "wss://" : "ws://";
+  const [socket, setSocket] = useState();
+
+  useEffect(() => {
+    if (gameData.room !== ""){
+      setSocket(new WebSocket(
+        `${ws_scheme}${window.location.hostname}:8000/ws/room/${gameData.room}/`
+      ));
+    }
+
+    
+  }, [isLogged])
 
   return (
     <BrowserRouter>
@@ -52,6 +66,7 @@ function App() {
                 setPlaceholder={setPlaceholder}
                 infopanel={infopanel}
                 setInfopanel={setInfopanel}
+                socket={socket}
               />
             )}
           />
