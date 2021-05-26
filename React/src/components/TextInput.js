@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function TextInput({ onAdd }) {
+function TextInput({ onAdd, isDrawer }) {
   const [text, setText] = useState("");
 
   const onSubmit = (e) => {
@@ -19,6 +19,7 @@ function TextInput({ onAdd }) {
           placeholder="Wprowadź odpowiedź..."
           value={text}
           onChange={(e) => setText(e.target.value)}
+          disabled={isDrawer}
         />
         <input type="submit" style={{ display: "none" }} />
       </form>
