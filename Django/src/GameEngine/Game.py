@@ -29,7 +29,8 @@ class Game:
             self.drawer = self.player
         if not self.host:
             self.host = self.player
-        self.word_to_guess = self.__get_random_word()
+        if not self.word_to_guess:
+            self.word_to_guess = self.__get_random_word()
         return self
 
     def guess_the_word(self, word):
@@ -46,7 +47,7 @@ class Game:
         if self.status == GameStatus.not_started:
             self.status = GameStatus.started
             
-        players_without_drawer = [x for x in self.player_list if x.name != self.player.name]
+        players_without_drawer = [x for x in self.player_list if x.name != self.drawer.name]
         if len(players_without_drawer) == 0:
             self.drawer = self.player
         else:
