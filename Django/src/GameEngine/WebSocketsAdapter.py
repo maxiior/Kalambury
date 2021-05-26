@@ -57,7 +57,7 @@ class WebSocketsAdapter:
         return responses
 
     def disconnect(self):
-        self.game.disconnect()
+        self.game.disconnect(self.player)
 
     def __handle_game_status(self, message=None):
         response = {
@@ -73,7 +73,6 @@ class WebSocketsAdapter:
         self.__send_to_all(response)
 
     def __handle_change_username(self, message):
-        print("Changing username. ", self.player)
         self.player.name = message["new_username"]
 
     def __handle_chat_message(self, message):
@@ -82,7 +81,8 @@ class WebSocketsAdapter:
             "User": self.player.name,
             "Message": message["Message"]
         }
-        is_guessed = self.game.guess_the_word(message["Message"])
+        #self.game.player = self.player
+        is_guessed = self.game.guess_the_word(self.player, message["Message"])
         self.__send_to_all(response)
         if is_guessed:
             who_guessed = {

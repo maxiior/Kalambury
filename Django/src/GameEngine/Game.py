@@ -19,27 +19,23 @@ class Game:
         self.player_list:List[Player] = [] 
         self.drawer:Player = None
         self.status:GameStatus = GameStatus.not_started
-        self.player:Player = None
         self.identifier = game_id
         
 
     def create_new_game(self):
         self.status = GameStatus.started
         if not self.drawer:
-            self.drawer = self.player
+            self.drawer = self.player_list[0]
         if not self.host:
-            self.host = self.player
+            self.host = self.player_list[0]
         if not self.word_to_guess:
             self.word_to_guess = self.__get_random_word()
         return self
 
-    def guess_the_word(self, word):
-        print("Word to guess: ", self.word_to_guess)
-        print("Word given: ", word)
+    def guess_the_word(self, player:Player, word:str):
         if word.lower() == self.word_to_guess.lower():
-            self.player.set_points(self.player.get_points() + 100)
+            player.set_points(player.get_points() + 100)
             self.drawer.set_points(self.drawer.get_points() + 50)
-            print("Guessed word: ", self.word_to_guess)
             return True
         return False
 
@@ -49,7 +45,7 @@ class Game:
             
         players_without_drawer = [x for x in self.player_list if x.name != self.drawer.name]
         if len(players_without_drawer) == 0:
-            self.drawer = self.player
+            self.drawer = self.player_list[0]
         else:
             self.drawer = players_without_drawer[random.randint(0, len(players_without_drawer) - 1)]
         self.word_to_guess = self.__get_random_word()
@@ -63,7 +59,6 @@ class Game:
         player.identifier = player_id
         player.name = f"NewPlayer_{random.randint(0,999)}"
         self.player_list.append(player)
-        self.player = player
         return player
 
     def get_word_placeholder(self):
@@ -74,14 +69,14 @@ class Game:
         if player:
             return player[0]
 
-    def disconnect(self):
-        self.player_list.remove(self.player)
+    def disconnect(self, player:Player):
+        self.player_list.remove(player)
 
     def __get_random_word(self):
         # Implement real external source
         words = ["Dom", "Zeszyt", "Banknot", "Komputer",
                  "Ropucha", "Kasztan", "Obraz", "Szpital",
-                 "Marcher", "Komin", "Harmonijka", "Kot"]
+                 "Marchew", "Komin", "Harmonijka", "Kot"]
         if self.word_to_guess in words:
             words.remove(self.word_to_guess)
         random_word = words[random.randint(0, len(words) - 1)]
