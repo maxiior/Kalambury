@@ -24,9 +24,11 @@ class Game:
         
 
     def create_new_game(self):
-        self.drawer = self.player
         self.status = GameStatus.started
-        self.host = self.player
+        if not self.drawer:
+            self.drawer = self.player
+        if not self.host:
+            self.host = self.player
         self.word_to_guess = self.__get_random_word()
         return self
 
