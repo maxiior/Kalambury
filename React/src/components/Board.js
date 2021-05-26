@@ -274,6 +274,7 @@ const Board = ({
             setClock(true);
           } else {
             setClock(false);
+            setIsDrawer(false);
           }
           break;
         }
