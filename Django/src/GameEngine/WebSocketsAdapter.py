@@ -36,6 +36,7 @@ class WebSocketsAdapter:
             "ClockStart": self.__handle_clock_start_info,
             "StartGame": self.__handle_start_game,
             "ChangeUsername": self.__handle_change_username,
+            "TimeOut": self.__handle_start_game,
         }
 
         # when message type not equals to key then, the handler will be executed

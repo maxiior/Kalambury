@@ -301,6 +301,8 @@ const Board = ({
           word={catchword !== "" ? catchword : placeholder}
           socket={socket}
           clock={clock}
+          host={host}
+          user={gameData.username}
         />
         <div className="inline">
           <div ref={colorsRef} className="colors">

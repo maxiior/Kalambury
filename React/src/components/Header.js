@@ -2,20 +2,19 @@ import "./styles/header.css";
 import { BiTimeFive } from "react-icons/bi";
 import { useEffect, useState } from "react";
 
-const Header = ({ word, socket, clock }) => {
-  const [sec, setSec] = useState(60);
+const Header = ({ word, socket, clock, host, user }) => {
+  const [sec, setSec] = useState(10);
 
   const tick = () => {
     if (sec > 0) setSec(sec - 1);
-    else {
-      //wysyłamy info do serwera, że koniec czasu
-      let info = {};
+    else if (sec === 0 && host === user) {
+      let info = { type: "TimeOut" };
       socket.send(JSON.stringify(info));
     }
   };
 
   useEffect(() => {
-    if (sec > 0 && clock === true) {
+    if (sec >= 0 && clock === true) {
       const timerId = setInterval(() => tick(), 1000);
       return () => clearInterval(timerId);
     }
