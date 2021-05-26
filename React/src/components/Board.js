@@ -341,7 +341,7 @@ const Board = ({
               </div>
               <PlayersList players={players} />
             </div>
-            <TextInput onAdd={addMessage} />
+            <TextInput onAdd={addMessage} isDrawer={isDrawer} />
             <MessagesList messages={messages} />
           </div>
         </div>
