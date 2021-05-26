@@ -94,6 +94,7 @@ const Board = ({
     console.log(host);
 
     const onColorUpdate = (e) => {
+      console.log(e.target.className.split(" ")[1]);
       current.color = e.target.className.split(" ")[1];
     };
     for (let i = 0; i < colors.length; i++) {
@@ -310,7 +311,7 @@ const Board = ({
           <div ref={colorsRef} className="colors">
             {colorsToChoose.map((color) => (
               <div
-                key={colorIterator.next()}
+                key={`color ${color}`}
                 className={`color ${color}`}
                 onClick={() => setSelectedColor(`s-color ${color}`)}
               />
