@@ -376,7 +376,7 @@ const Board = ({
                     onClick={() => {
                       setEnd(!end);
                       setIsLogged(!isLogged);
-                      sendMessage("Leave", { new_username: gameData.username });
+                      sendMessage("Leave", { name: gameData.username });
                     }}
                   >
                     Powrót do lobby
