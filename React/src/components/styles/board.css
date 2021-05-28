@@ -138,3 +138,12 @@ body {
   justify-content: center;
   position: relative;
 }
+
+.who-won {
+  position: absolute;
+  color: #ffcc5c;
+  font-size: 30px;
+  margin-bottom: 300px;
+  display: flex;
+  align-items: center;
+}

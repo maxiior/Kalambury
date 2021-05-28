@@ -3,7 +3,7 @@ import { getNumberIterator } from "./Iterator";
 
 const playerIterator = getNumberIterator();
 
-const PlayersList = ({ players, lastWinner }) => {
+const PlayersList = ({ players, lastWinner, winner }) => {
   return (
     <div className="main2">
       <div className="players">Gracze:</div>
@@ -13,7 +13,11 @@ const PlayersList = ({ players, lastWinner }) => {
         .map((p) => (
           <div
             key={playerIterator.next()}
-            className={`single ${lastWinner.name === p.nick && "winner"}`}
+            className={`single ${
+              winner !== ""
+                ? winner === p.nick && "winner"
+                : lastWinner.name === p.nick && "winner"
+            }`}
           >
             <div>{p.nick}</div>
             <div>{p.points} pkt.</div>

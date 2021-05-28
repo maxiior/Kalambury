@@ -7,6 +7,8 @@ import MessagesList from "./MessagesList";
 import { getNumberIterator } from "./Iterator";
 import InfoPanel from "./InfoPanel";
 import Chat from "./Chat";
+import { Link } from "react-router-dom";
+import { BiCrown } from "react-icons/bi";
 
 const colorIterator = getNumberIterator();
 
@@ -29,6 +31,10 @@ const Board = ({
   socket,
   lastWinner,
   setLastWinner,
+  end,
+  setEnd,
+  winner,
+  setWinner,
 }) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
@@ -238,6 +244,12 @@ const Board = ({
           break;
         }
 
+        case dataParsed.type === "TheEnd": {
+          setWinner(dataParsed.winner);
+          setEnd(true);
+          break;
+        }
+
         case dataParsed.type === "WhoGuessed": {
           setLastWinner(dataParsed);
           break;
@@ -325,7 +337,6 @@ const Board = ({
                 onClick={() => setSelectedColor(`s-color ${color}`)}
               />
             ))}
-
             <div className="selected-color">Color</div>
             <div className={selectedColor} />
           </div>
@@ -338,6 +349,12 @@ const Board = ({
                   width="600"
                   height="600"
                 />
+                {end && (
+                  <div className="who-won">
+                    <BiCrown className="BiCrown" />
+                    Zwycięzcą zostaje: {winner}
+                  </div>
+                )}
                 {gameData.username === host && !start && (
                   <button
                     className="start-game"
@@ -349,8 +366,24 @@ const Board = ({
                     Rozpocznij grę
                   </button>
                 )}
+                {end && (
+                  <Link
+                    to="/"
+                    className="start-game"
+                    style={{ textDecoration: "none" }}
+                    onClick={() => {
+                      setEnd(!end);
+                    }}
+                  >
+                    Powrót do lobby
+                  </Link>
+                )}
               </div>
-              <PlayersList players={players} lastWinner={lastWinner} />
+              <PlayersList
+                players={players}
+                lastWinner={lastWinner}
+                winner={winner}
+              />
             </div>
             <Chat
               isDrawer={isDrawer}
