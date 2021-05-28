@@ -19,7 +19,7 @@ function App() {
   const [isDrawer, setIsDrawer] = useState(false);
   const [infopanel, setInfopanel] = useState(true);
   const [socket, setSocket] = useState();
-  const [messages, setMessage] = useState([]);
+  const [lastWinner, setLastWinner] = useState("");
 
   useEffect(() => {
     if (gameData.room !== "") {
@@ -67,8 +67,8 @@ function App() {
                 infopanel={infopanel}
                 setInfopanel={setInfopanel}
                 socket={socket}
-                messages={messages}
-                setMessage={setMessage}
+                lastWinner={lastWinner}
+                setLastWinner={setLastWinner}
               />
             )}
           />

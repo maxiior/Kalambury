@@ -1,8 +1,9 @@
 import "./styles/header.css";
 import { BiTimeFive } from "react-icons/bi";
 import { useEffect, useState } from "react";
+import { BiCrown } from "react-icons/bi";
 
-const Header = ({ word, socket, clock, host, user }) => {
+const Header = ({ word, socket, clock, host, user, lastWinner }) => {
   const [sec, setSec] = useState(60);
 
   const tick = () => {
@@ -27,6 +28,12 @@ const Header = ({ word, socket, clock, host, user }) => {
           <BiTimeFive />
         </div>
         <div>{sec} sekund</div>
+        {lastWinner !== "" && (
+          <div className="who-guessed">
+            <BiCrown className="BiCrown" />
+            Hasło zgadł(a): {lastWinner.name} ({lastWinner.password})
+          </div>
+        )}
       </div>
       <div>{word.includes("_") ? "_ ".repeat(word.length) : word}</div>
     </div>

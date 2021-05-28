@@ -6,6 +6,7 @@ import Header from "./Header";
 import MessagesList from "./MessagesList";
 import { getNumberIterator } from "./Iterator";
 import InfoPanel from "./InfoPanel";
+import Chat from "./Chat";
 
 const colorIterator = getNumberIterator();
 
@@ -26,11 +27,12 @@ const Board = ({
   infopanel,
   setInfopanel,
   socket,
-  messages,
-  setMessage,
+  lastWinner,
+  setLastWinner,
 }) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
+  const [messages, setMessage] = useState([]);
 
   const [players, setPlayer] = useState([]);
   const [selectedColor, setSelectedColor] = useState("s-color black");
@@ -236,6 +238,11 @@ const Board = ({
           break;
         }
 
+        case dataParsed.type === "WhoGuessed": {
+          setLastWinner(dataParsed);
+          break;
+        }
+
         case dataParsed.type === "GameStatus": {
           if (dataParsed.player_list !== undefined) {
             Object.keys(dataParsed.player_list).map((user, value) => {
@@ -307,6 +314,7 @@ const Board = ({
           clock={clock}
           host={host}
           user={gameData.username}
+          lastWinner={lastWinner}
         />
         <div className="inline">
           <div ref={colorsRef} className="colors">
@@ -336,17 +344,19 @@ const Board = ({
                     onClick={() => {
                       setStart(!start);
                       startGame();
-                      //sendMessage("GetInfo", {});
                     }}
                   >
                     Rozpocznij grę
                   </button>
                 )}
               </div>
-              <PlayersList players={players} />
+              <PlayersList players={players} lastWinner={lastWinner} />
             </div>
-            <TextInput onAdd={addMessage} isDrawer={isDrawer} />
-            <MessagesList messages={messages} />
+            <Chat
+              isDrawer={isDrawer}
+              messages={messages}
+              addMessage={addMessage}
+            />
           </div>
         </div>
       </div>

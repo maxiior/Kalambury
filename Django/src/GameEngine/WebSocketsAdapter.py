@@ -86,12 +86,12 @@ class WebSocketsAdapter:
         self.__send_to_all(response)
         if is_guessed:
             who_guessed = {
-                "type": "ChatMessage",
-                "User": "2daef51c-be1b-11eb-8529-0242ac130003",
-                "Message": self.player.name + " zgadł hasło (" + message["Message"] + ")"
+                "type": "WhoGuessed",
+                "name": self.player.name,
+                "password": message["Message"],
             }
-            self.__send_to_all(who_guessed)
             self.__new_round()
+            self.__send_to_all(who_guessed)
 
     def __handle_start_game(self, message):
         self.__new_round()

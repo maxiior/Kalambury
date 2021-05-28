@@ -1,27 +1,38 @@
-.header
-{
-    width: 100%;
-    height: 70px;
-    background-color: white;
-    margin-bottom: 15px;
-    border-radius: 15px;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 50px;
-    box-sizing: border-box;
-    align-items: center;
-    font-size: 30px;
+.header {
+  width: 100%;
+  height: 70px;
+  background-color: white;
+  margin-bottom: 15px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 50px;
+  box-sizing: border-box;
+  align-items: center;
+  font-size: 30px;
 }
 
-.time
-{
-    display: flex;
-    align-items: center;
+.time {
+  display: flex;
+  align-items: center;
 }
 
-.time-i
-{
-    display: flex;
-    align-items: center;
-    margin-right: 10px;
+.time-i {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.who-guessed {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  margin-left: 50px;
+  font-weight: 500;
+  color: #ffcc5c;
+}
+
+.BiCrown {
+  font-size: 30px;
+  margin-right: 5px;
 }

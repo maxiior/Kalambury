@@ -1,9 +1,9 @@
 import "./styles/playerslist.css";
 import { getNumberIterator } from "./Iterator";
 
-const playerIterator = getNumberIterator()
+const playerIterator = getNumberIterator();
 
-const PlayersList = ({ players }) => {
+const PlayersList = ({ players, lastWinner }) => {
   return (
     <div className="main2">
       <div className="players">Gracze:</div>
@@ -11,7 +11,10 @@ const PlayersList = ({ players }) => {
       {players
         .sort(({ points: current }, { points: previous }) => previous - current)
         .map((p) => (
-          <div key={playerIterator.next()} className="single">
+          <div
+            key={playerIterator.next()}
+            className={`single ${lastWinner.name === p.nick && "winner"}`}
+          >
             <div>{p.nick}</div>
             <div>{p.points} pkt.</div>
           </div>
