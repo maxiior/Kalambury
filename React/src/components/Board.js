@@ -7,7 +7,7 @@ import MessagesList from "./MessagesList";
 import { getNumberIterator } from "./Iterator";
 import InfoPanel from "./InfoPanel";
 import Chat from "./Chat";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { BiCrown } from "react-icons/bi";
 
 const colorIterator = getNumberIterator();
@@ -35,6 +35,8 @@ const Board = ({
   setEnd,
   winner,
   setWinner,
+  isLogged,
+  setIsLogged,
 }) => {
   const canvasRef = useRef(null);
   const colorsRef = useRef(null);
@@ -373,11 +375,13 @@ const Board = ({
                     style={{ textDecoration: "none" }}
                     onClick={() => {
                       setEnd(!end);
+                      setIsLogged(!isLogged);
                     }}
                   >
                     Powrót do lobby
                   </Link>
                 )}
+                {!isLogged && <Redirect to="/" />}
               </div>
               <PlayersList
                 players={players}

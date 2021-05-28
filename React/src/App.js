@@ -75,6 +75,8 @@ function App() {
                 setEnd={setEnd}
                 winner={winner}
                 setWinner={setWinner}
+                isLogged={isLogged}
+                setIsLogged={setIsLogged}
               />
             )}
           />
