@@ -276,6 +276,7 @@ const Board = ({
           } else {
             setClock(false);
             setIsDrawer(false);
+            setCatchword("");
           }
           break;
         }

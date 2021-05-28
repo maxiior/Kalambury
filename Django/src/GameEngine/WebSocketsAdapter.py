@@ -110,17 +110,17 @@ class WebSocketsAdapter:
     def __new_round(self):
         self.game.new_round()
 
-        response_with_word_to_draw = {
-            "type": "WordToDraw",
-            "word": self.game.word_to_guess
-        }
-        self.__send_to_drawer(response_with_word_to_draw)
-
         response = {
             "type": "ClockInfo",
             "status": "reset"
         }
         self.__send_to_all(response)
+
+        response_with_word_to_draw = {
+            "type": "WordToDraw",
+            "word": self.game.word_to_guess
+        }
+        self.__send_to_drawer(response_with_word_to_draw)
 
     def __prepare_response(self, response: dict, receivers: List[Player]):
         receivers_ids = [x.identifier for x in receivers]
