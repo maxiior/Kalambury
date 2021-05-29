@@ -14,6 +14,7 @@ class Game:
     def __init__(self, game_id, player) -> None:
         self.identifier = None
         self.word_to_guess = ""
+        self.words_used = []
         self.round_number:int = 0
         self.host:Player = None
         self.player_list:List[Player] = [] 
@@ -74,12 +75,12 @@ class Game:
 
     def __get_random_word(self):
         # Implement real external source
-        words = ["Dom", "Zeszyt", "Banknot", "Komputer",
+        words_all = ["Dom", "Zeszyt", "Banknot", "Komputer",
                  "Ropucha", "Kasztan", "Obraz", "Szpital",
                  "Marchew", "Komin", "Harmonijka", "Kot"]
-        if self.word_to_guess in words:
-            words.remove(self.word_to_guess)
-        random_word = words[random.randint(0, len(words) - 1)]
+        words_available = [x for x in words_all if x not in self.words_used]
+        random_word = words_available[random.randint(0, len(words_available) - 1)]
+        self.words_used.append(random_word)
         return random_word
 
 
