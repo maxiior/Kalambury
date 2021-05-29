@@ -58,6 +58,10 @@ class WebSocketsAdapter:
 
     def disconnect(self):
         self.game.disconnect(self.player)
+        if len(self.game.player_list) == 0:
+            if self.game in GAMES_DB:
+                GAMES_DB.remove(self.game)
+            print("Destroying the room: ", self.game.identifier)
 
     def __handle_game_status(self, message=None):
         response = {
