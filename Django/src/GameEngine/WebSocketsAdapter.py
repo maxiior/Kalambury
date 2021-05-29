@@ -37,6 +37,7 @@ class WebSocketsAdapter:
             "StartGame": self.__handle_start_game,
             "ChangeUsername": self.__handle_change_username,
             "TimeOut": self.__handle_start_game,
+            "Leave": self.disconnect,
         }
 
         # when message type not equals to key then, the handler will be executed
@@ -56,7 +57,7 @@ class WebSocketsAdapter:
         self.responses = []
         return responses
 
-    def disconnect(self):
+    def disconnect(self, message=None):
         self.game.disconnect(self.player)
         if len(self.game.player_list) == 0:
             if self.game in GAMES_DB:
