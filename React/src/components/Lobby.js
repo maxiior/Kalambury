@@ -36,6 +36,7 @@ export default function Lobby({ setIsLogged, setGameData }) {
               placeholder="Nazwa użytkownika"
               type="text"
               size="80"
+              pattern="[a-zA-Z0-9]+"
             />
             <input
               name="room"
@@ -44,6 +45,7 @@ export default function Lobby({ setIsLogged, setGameData }) {
               type="text"
               placeholder="Pokój"
               size="80"
+              pattern="[a-zA-Z0-9]+"
             />
             <button id="join-button" type="submit" className="join-button">
               Dołącz
