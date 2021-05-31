@@ -71,7 +71,8 @@ class Game:
             return player[0]
 
     def disconnect(self, player:Player):
-        self.player_list.remove(player)
+        if player in self.player_list:
+            self.player_list.remove(player)
 
     def __get_random_word(self):
         # Implement real external source
