@@ -151,7 +151,7 @@ const Board = ({
       current.y = e.clientY || e.touches[0].clientY;
 
       current.x = current.x - positionCanvas.left;
-      current.y = current.y - positionCanvas.top - document.body.getBoundingClientRect().top + 30;
+      current.y = current.y - positionCanvas.top + window.scrollY;
     };
 
     const onMouseMove = (e) => {
@@ -162,7 +162,7 @@ const Board = ({
       let x = e.clientX || e.touches[0].clientX;
       let y = e.clientY || e.touches[0].clientY;
       x = x - positionCanvas.left;
-      y = y - positionCanvas.top - document.body.getBoundingClientRect().top + 30;
+      y = y - positionCanvas.top + window.scrollY;
 
       drawLine(current.x, current.y, x, y, current.color, false);
       current.x = x;
@@ -177,7 +177,7 @@ const Board = ({
       let x = e.clientX || e.touches[0].clientX;
       let y = e.clientY || e.touches[0].clientY;
       x = x - positionCanvas.left;
-      y = y - positionCanvas.top - document.body.getBoundingClientRect().top + 30;
+      y = y - positionCanvas.top + window.scrollY;
 
       drawing = false;
       drawLine(current.x, current.y, x, y, current.color, false);
